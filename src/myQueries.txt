@@ -1,0 +1,53 @@
+mutation createIngridient {
+  createIngridient(input: {
+    name: "cinnamon roll" 
+    aisle: "bakery"
+    count: 3
+  }) {
+    id name description count aisle
+  }
+}
+
+mutation deleteIngridient {
+  deleteIngridient(input: {
+    id:"e164f13b-72b1-43a9-b059-83857efda343"
+  }) {
+    id 
+  }
+}
+
+mutation updateIngridient {
+  updateIngridient(input: {
+    id: "moi"
+  }) {
+    id name aisle
+  }
+}
+
+query listIngridients {
+  listIngridients {
+    items {
+      id
+      name
+      description
+      count
+      aisle
+    }
+  }
+}
+
+query searchIngridients {
+  listIngridients(filter: {
+    aisle: {
+      contains: "dairy"
+    }
+  }) {
+    items {
+      id
+      name
+      description
+      aisle
+      count
+    }
+  }
+}
