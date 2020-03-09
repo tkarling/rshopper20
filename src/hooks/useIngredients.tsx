@@ -8,7 +8,7 @@ import { onCreateIngridient } from "../graphql/subscriptions";
 
 Amplify.configure(awsConfig);
 
-type Ingredient = {
+export type Ingredient = {
   name: string;
   description: string;
   aisle: string;
