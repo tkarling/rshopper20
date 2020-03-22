@@ -5,11 +5,17 @@ import useIngredients from "./hooks/useIngredients";
 import ShoppingList from "./components/ShoppingList";
 
 function App() {
-  const { shoppingItems, createNewShoppingItem } = useIngredients();
+  const {
+    shoppingItems,
+    error,
+    createNewShoppingItem,
+    deleteShoppingItem
+  } = useIngredients();
   return (
     <ShoppingList
       shoppingItems={shoppingItems}
-      actions={createNewShoppingItem}
+      error={error}
+      actions={{ createNewShoppingItem, deleteShoppingItem }}
     />
   );
 }

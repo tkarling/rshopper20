@@ -36,6 +36,18 @@ query listIngridients {
   }
 }
 
+query listIngridients {
+  listIngridients (filter:{name:{contains:"w"}}) {
+    items {
+      id
+      name
+      description
+      count
+      aisle
+    }
+  }
+}
+
 query searchIngridients {
   listIngridients(filter: {
     aisle: {
