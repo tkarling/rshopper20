@@ -167,9 +167,7 @@ export default function PrimarySearchAppBar({
       {page !== "Shopping History" && (
         <MenuItem onClick={() => handleSetPage("Shopping History" as Page)}>
           <IconButton aria-label="show Shopping History" color="inherit">
-            <Badge badgeContent={11} color="secondary">
-              <HistoryIcon />
-            </Badge>
+            <HistoryIcon />
           </IconButton>
           <p>Shopping History</p>
         </MenuItem>
@@ -233,9 +231,7 @@ export default function PrimarySearchAppBar({
               color="inherit"
               onClick={() => handleSetPage("Shopping History" as Page)}
             >
-              <Badge badgeContent={17} color="secondary">
-                <HistoryIcon />
-              </Badge>
+              <HistoryIcon />
             </IconButton>
             <IconButton
               edge="end"
