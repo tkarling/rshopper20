@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import awsConfig from "../aws-exports";
