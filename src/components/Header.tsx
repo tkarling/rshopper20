@@ -13,7 +13,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import HistoryIcon from "@material-ui/icons/History";
+import SignOutIcon from "@material-ui/icons/ExitToApp";
 import MoreIcon from "@material-ui/icons/MoreVert";
+import { signOut } from "../hooks/authUtils";
 
 import { Page } from "../types";
 
@@ -140,6 +142,7 @@ export default function PrimarySearchAppBar({
           My Account
         </MenuItem>
       )}
+      <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
     </Menu>
   );
 
@@ -183,6 +186,12 @@ export default function PrimarySearchAppBar({
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
+      </MenuItem>
+      <MenuItem onClick={() => signOut()}>
+        <IconButton aria-label="show Shopping History" color="inherit">
+          <SignOutIcon />
+        </IconButton>
+        <p>Sign Out</p>
       </MenuItem>
     </Menu>
   );

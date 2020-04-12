@@ -14,6 +14,7 @@ Amplify.configure(awsConfig);
 export type Ingredient = {
   id?: String;
   name: string;
+  unit?: string;
   description: string;
   aisle: string;
   count: number;
@@ -88,6 +89,7 @@ const useIngredients = () => {
       const errorText = getErrorText("Error creating item", err);
       setError(errorText);
       console.log(errorText, err);
+      throw error;
     }
   };
 
@@ -138,12 +140,19 @@ const useIngredients = () => {
   }, []);
 
   const getShoppingList = async () => {
-    const shoppingItems = await API.graphql(graphqlOperation(listIngridients));
-    dispatch({
-      type: "QUERY",
-      payload: shoppingItems.data.listIngridients.items
-    });
+    try {
+      const shoppingItems = await API.graphql(
+        graphqlOperation(listIngridients)
+      );
+      dispatch({
+        type: "QUERY",
+        payload: shoppingItems.data.listIngridients.items
+      });
+    } catch (error) {
+      console.log("Error getting shopping list", error);
+    }
   };
+
   return {
     shoppingItems: state.shoppingItems,
     error,
