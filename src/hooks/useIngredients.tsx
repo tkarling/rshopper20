@@ -73,40 +73,27 @@ const reducer = (shoppingItems: Ingredient[], action: Action) => {
   }
 };
 
-const getErrorText = (text: string, err: any) =>
-  `${text}: ` +
-  err.errors.reduce(
-    (acc: string, e: Error) => e.message + (acc ? ", " + acc : ""),
-    ""
-  );
-
-const useIngredients = () => {
-  const [error, setError] = useState("");
+const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
   const createNewShoppingItem = async (item: Ingredient) => {
-    setError("");
     try {
       await API.graphql(graphqlOperation(createIngridient, { input: item }));
     } catch (err) {
-      const errorText = getErrorText("Error creating item", err);
-      setError(errorText);
-      throw error;
+      onError(err.errors);
+      throw err;
     }
   };
 
   const deleteShoppingItem = async (item: Ingredient) => {
-    setError("");
     try {
       await API.graphql(
         graphqlOperation(deleteIngridient, { input: { id: item.id } })
       );
     } catch (err) {
-      const errorText = getErrorText("Error deleting item", err);
-      setError(errorText);
+      onError(err.errors);
     }
   };
 
   const updateShoppingItem = async (item: Ingredient) => {
-    setError("");
     try {
       await API.graphql(
         graphqlOperation(updateIngridient, {
@@ -114,8 +101,7 @@ const useIngredients = () => {
         })
       );
     } catch (err) {
-      const errorText = getErrorText("Error updating item", err);
-      setError(errorText);
+      onError(err.errors);
     }
   };
 
@@ -177,14 +163,12 @@ const useIngredients = () => {
         }))
       });
     } catch (err) {
-      const errorText = getErrorText("Error getting ingredients", err);
-      setError(errorText);
+      onError(err.errors);
     }
   };
 
   return {
     shoppingItems,
-    error,
     createNewShoppingItem,
     deleteShoppingItem,
     updateShoppingItem
