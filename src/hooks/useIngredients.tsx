@@ -44,33 +44,22 @@ type SubscriptionEvent<D> = {
   };
 };
 
-const initialState: AppState = {
-  shoppingItems: []
-};
-const reducer = (state: AppState, action: Action) => {
+const initialState: Ingredient[] = [];
+const reducer = (shoppingItems: Ingredient[], action: Action) => {
   switch (action.type) {
     case "QUERY":
-      return { ...state, shoppingItems: action.payload };
+      return action.payload;
     case "ADD_SUBSCRIPTION":
-      return {
-        ...state,
-        shoppingItems: [...state.shoppingItems, action.payload]
-      };
+      return [...shoppingItems, action.payload];
     case "DELETE_SUBSCRIPTION":
-      return {
-        ...state,
-        shoppingItems: [...state.shoppingItems].filter(
-          item => item.id !== action.payload.id
-        )
-      };
+      return shoppingItems.filter(item => item.id !== action.payload.id);
     default:
-      return state;
+      return shoppingItems;
   }
 };
 
 const getErrorText = (text: string, err: any) =>
-  text +
-  ": " +
+  `${text}: ` +
   err.errors.reduce(
     (acc: string, e: Error) => e.message + (acc ? ", " + acc : ""),
     ""
@@ -81,14 +70,10 @@ const useIngredients = () => {
   const createNewShoppingItem = async (inputs: Ingredient) => {
     setError("");
     try {
-      const newIng = await API.graphql(
-        graphqlOperation(createIngridient, { input: inputs })
-      );
-      console.log("createNewShoppingItem -> newIng", inputs, newIng);
+      await API.graphql(graphqlOperation(createIngridient, { input: inputs }));
     } catch (err) {
       const errorText = getErrorText("Error creating item", err);
       setError(errorText);
-      console.log(errorText, err);
       throw error;
     }
   };
@@ -96,22 +81,20 @@ const useIngredients = () => {
   const deleteShoppingItem = async (item: Ingredient) => {
     setError("");
     try {
-      const deleteIng = await API.graphql(
+      await API.graphql(
         graphqlOperation(deleteIngridient, { input: { id: item.id } })
       );
-      console.log("deleteShoppingItem -> deleteIng", deleteIng);
     } catch (err) {
       const errorText = getErrorText("Error deleting item", err);
       setError(errorText);
-      console.log(errorText, err);
     }
   };
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [shoppingItems, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     getShoppingList();
 
-    const subscription1 = API.graphql(
+    const subscriptionCreate = API.graphql(
       graphqlOperation(onCreateIngridient)
     ).subscribe({
       next: (
@@ -122,7 +105,7 @@ const useIngredients = () => {
       }
     });
 
-    const subscription2 = API.graphql(
+    const subscriptionDelete = API.graphql(
       graphqlOperation(onDeleteIngridient)
     ).subscribe({
       next: (
@@ -134,8 +117,8 @@ const useIngredients = () => {
     });
 
     return () => {
-      subscription1.unsubscribe();
-      subscription2.unsubscribe();
+      subscriptionCreate.unsubscribe();
+      subscriptionDelete.unsubscribe();
     };
   }, []);
 
@@ -148,13 +131,14 @@ const useIngredients = () => {
         type: "QUERY",
         payload: shoppingItems.data.listIngridients.items
       });
-    } catch (error) {
-      console.log("Error getting shopping list", error);
+    } catch (err) {
+      const errorText = getErrorText("Error getting ingredients", err);
+      setError(errorText);
     }
   };
 
   return {
-    shoppingItems: state.shoppingItems,
+    shoppingItems,
     error,
     createNewShoppingItem,
     deleteShoppingItem
