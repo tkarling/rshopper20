@@ -2,22 +2,29 @@ import { useEffect, useReducer, useState } from "react";
 
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import awsConfig from "../aws-exports";
-import { createIngridient, deleteIngridient } from "../graphql/mutations";
+import {
+  createIngridient,
+  deleteIngridient,
+  updateIngridient
+} from "../graphql/mutations";
 import { listIngridients } from "../graphql/queries";
 import {
   onCreateIngridient,
-  onDeleteIngridient
+  onDeleteIngridient,
+  onUpdateIngridient
 } from "../graphql/subscriptions";
 
 Amplify.configure(awsConfig);
 
 export type Ingredient = {
-  id?: String;
+  id?: string;
   name: string;
   unit?: string;
   description: string;
   aisle: string;
   count: number;
+  isBought: boolean;
+  isOnList: boolean;
 };
 
 type AppState = {
@@ -36,6 +43,10 @@ type Action =
   | {
       type: "DELETE_SUBSCRIPTION";
       payload: Ingredient;
+    }
+  | {
+      type: "UPDATE_SUBSCRIPTION";
+      payload: Ingredient;
     };
 
 type SubscriptionEvent<D> = {
@@ -53,6 +64,10 @@ const reducer = (shoppingItems: Ingredient[], action: Action) => {
       return [...shoppingItems, action.payload];
     case "DELETE_SUBSCRIPTION":
       return shoppingItems.filter(item => item.id !== action.payload.id);
+    case "UPDATE_SUBSCRIPTION":
+      return shoppingItems.map(item =>
+        item.id !== action.payload.id ? item : { ...action.payload }
+      );
     default:
       return shoppingItems;
   }
@@ -67,10 +82,10 @@ const getErrorText = (text: string, err: any) =>
 
 const useIngredients = () => {
   const [error, setError] = useState("");
-  const createNewShoppingItem = async (inputs: Ingredient) => {
+  const createNewShoppingItem = async (item: Ingredient) => {
     setError("");
     try {
-      await API.graphql(graphqlOperation(createIngridient, { input: inputs }));
+      await API.graphql(graphqlOperation(createIngridient, { input: item }));
     } catch (err) {
       const errorText = getErrorText("Error creating item", err);
       setError(errorText);
@@ -89,8 +104,22 @@ const useIngredients = () => {
       setError(errorText);
     }
   };
-  const [shoppingItems, dispatch] = useReducer(reducer, initialState);
 
+  const updateShoppingItem = async (item: Ingredient) => {
+    setError("");
+    try {
+      await API.graphql(
+        graphqlOperation(updateIngridient, {
+          input: { ...item, isBougt: item.isBought, isBought: undefined }
+        })
+      );
+    } catch (err) {
+      const errorText = getErrorText("Error updating item", err);
+      setError(errorText);
+    }
+  };
+
+  const [shoppingItems, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
     getShoppingList();
 
@@ -116,9 +145,22 @@ const useIngredients = () => {
       }
     });
 
+    const subscriptionUpdate = API.graphql(
+      graphqlOperation(onUpdateIngridient)
+    ).subscribe({
+      next: (eventData: SubscriptionEvent<{ onUpdateIngridient: any }>) => {
+        const payload = eventData.value.data.onUpdateIngridient;
+        dispatch({
+          type: "UPDATE_SUBSCRIPTION",
+          payload: { ...payload, isBought: payload.isBougt }
+        });
+      }
+    });
+
     return () => {
       subscriptionCreate.unsubscribe();
       subscriptionDelete.unsubscribe();
+      subscriptionUpdate.unsubscribe();
     };
   }, []);
 
@@ -129,7 +171,10 @@ const useIngredients = () => {
       );
       dispatch({
         type: "QUERY",
-        payload: shoppingItems.data.listIngridients.items
+        payload: shoppingItems.data.listIngridients.items.map((item: any) => ({
+          ...item,
+          isBought: item.isBougt
+        }))
       });
     } catch (err) {
       const errorText = getErrorText("Error getting ingredients", err);
@@ -141,7 +186,8 @@ const useIngredients = () => {
     shoppingItems,
     error,
     createNewShoppingItem,
-    deleteShoppingItem
+    deleteShoppingItem,
+    updateShoppingItem
   };
 };
 

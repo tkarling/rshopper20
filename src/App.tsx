@@ -14,7 +14,8 @@ function App() {
     shoppingItems,
     error,
     createNewShoppingItem,
-    deleteShoppingItem
+    deleteShoppingItem,
+    updateShoppingItem
   } = useIngredients();
   return (
     <div>
@@ -22,11 +23,15 @@ function App() {
       {page === "Shopping List" && (
         <ShoppingList
           shoppingItems={shoppingItems}
-          error={error}
-          actions={{ createNewShoppingItem, deleteShoppingItem }}
+          actions={{
+            createNewShoppingItem,
+            deleteShoppingItem,
+            updateShoppingItem
+          }}
         />
       )}
       {page !== "Shopping List" && <GenericPage page={page} />}
+      {error && <div style={{ color: "red" }}>{error}</div>}
     </div>
   );
 }
