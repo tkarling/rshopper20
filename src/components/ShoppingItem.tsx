@@ -1,39 +1,69 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import SaveIcon from "@material-ui/icons/Save";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: 10,
-    display: "flex"
+    display: "flex",
   },
   inputsContainer: {
     display: "flex",
     flexDirection: "column",
-    flex: 1
+    flex: 1,
   },
   buttonContainer: {
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   row: {
     display: "flex",
     alignItems: "stretch",
     justifyContent: "stretch",
-    marginBottom: 10
+    marginBottom: 10,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: "15ch"
-  }
+    width: "15ch",
+  },
 }));
+
+const AISLES = ["Bakery", "Dairy", "Produce", "Misc"];
+
+const Field = ({
+  name,
+  width = "flex",
+  classes,
+  inputs,
+  handleChange,
+  readOnly = false,
+}: {
+  name: string;
+  width?: string;
+  classes: any;
+  inputs: any;
+  handleChange: (event: any) => void;
+  readOnly?: boolean;
+}) => (
+  <TextField
+    className={classes.textField}
+    style={width !== "flex" ? { width: Number(width) } : { flex: 1 }}
+    onChange={handleChange}
+    type="text"
+    name={name.toLowerCase()}
+    placeholder={name}
+    value={inputs[name.toLowerCase()] || ""}
+    inputProps={{
+      readOnly,
+    }}
+  />
+);
 
 const emptyInputs = {
   name: undefined,
@@ -41,7 +71,7 @@ const emptyInputs = {
   aisle: undefined,
   description: undefined,
   recipe: "BaseList",
-  count: 1
+  count: 1,
 };
 
 const ShoppingItem = ({ actions }: { actions: any }) => {
@@ -51,10 +81,9 @@ const ShoppingItem = ({ actions }: { actions: any }) => {
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<any>
   ) => {
     const payload = { [e.target.name]: e.target.value };
-    setInputs(pInputs => ({ ...pInputs, ...payload }));
+    setInputs((pInputs) => ({ ...pInputs, ...payload }));
   };
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("e", e);
     e.stopPropagation();
     e.preventDefault();
     inputs.recipe = undefined as any; // TODO: remove this line after DB supports recipe
@@ -67,39 +96,16 @@ const ShoppingItem = ({ actions }: { actions: any }) => {
     }
   };
 
+  const common = { classes, inputs, handleChange };
   return (
     <div>
       <form>
         <div className={classes.root}>
           <div className={classes.inputsContainer}>
             <div className={classes.row}>
-              <TextField
-                className={classes.textField}
-                style={{ width: 20 }}
-                onChange={handleChange}
-                type="text"
-                name="count"
-                placeholder="Count"
-                value={inputs.count || ""}
-              />
-              <TextField
-                className={classes.textField}
-                style={{ width: 40 }}
-                onChange={handleChange}
-                type="text"
-                name="unit"
-                placeholder="Unit"
-                value={inputs.unit || ""}
-              />
-              <TextField
-                className={classes.textField}
-                style={{ flex: 1 }}
-                onChange={handleChange}
-                type="text"
-                name="name"
-                placeholder="Name"
-                value={inputs.name || ""}
-              />
+              <Field name="Count" width="20" {...common} />
+              <Field name="Unit" width="40" {...common} />
+              <Field name="Name" {...common} />
             </div>
             <div className={classes.row}>
               <FormControl>
@@ -111,24 +117,12 @@ const ShoppingItem = ({ actions }: { actions: any }) => {
                   value={inputs.aisle || ""}
                   onChange={handleChange}
                 >
-                  <MenuItem value="bakery">Bakery</MenuItem>
-                  <MenuItem value="dairy">Dairy</MenuItem>
-                  <MenuItem value="produce">Produce</MenuItem>
-                  <MenuItem value="misc">Misc</MenuItem>
+                  {AISLES.map((aisle) => (
+                    <MenuItem value={aisle.toLowerCase()}>{aisle}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
-              <TextField
-                className={classes.textField}
-                style={{ flex: 1 }}
-                InputProps={{
-                  readOnly: true
-                }}
-                onChange={handleChange}
-                type="text"
-                name="recipe"
-                placeholder="Base List"
-                value={inputs.recipe || ""}
-              />
+              <Field name="Recipe" {...common} readOnly={true} />
             </div>
           </div>
           <div className={classes.buttonContainer}>
