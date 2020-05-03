@@ -1,17 +1,17 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import awsConfig from "../aws-exports";
 import {
   createIngridient,
   deleteIngridient,
-  updateIngridient
+  updateIngridient,
 } from "../graphql/mutations";
 import { listIngridients } from "../graphql/queries";
 import {
   onCreateIngridient,
   onDeleteIngridient,
-  onUpdateIngridient
+  onUpdateIngridient,
 } from "../graphql/subscriptions";
 
 Amplify.configure(awsConfig);
@@ -63,9 +63,9 @@ const reducer = (shoppingItems: Ingredient[], action: Action) => {
     case "ADD_SUBSCRIPTION":
       return [...shoppingItems, action.payload];
     case "DELETE_SUBSCRIPTION":
-      return shoppingItems.filter(item => item.id !== action.payload.id);
+      return shoppingItems.filter((item) => item.id !== action.payload.id);
     case "UPDATE_SUBSCRIPTION":
-      return shoppingItems.map(item =>
+      return shoppingItems.map((item) =>
         item.id !== action.payload.id ? item : { ...action.payload }
       );
     default:
@@ -97,7 +97,7 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
     try {
       await API.graphql(
         graphqlOperation(updateIngridient, {
-          input: { ...item, isBougt: item.isBought, isBought: undefined }
+          input: { ...item, isBougt: item.isBought, isBought: undefined },
         })
       );
     } catch (err) {
@@ -107,6 +107,25 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
 
   const [shoppingItems, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
+    const getShoppingList = async () => {
+      try {
+        const shoppingItems = await API.graphql(
+          graphqlOperation(listIngridients)
+        );
+        dispatch({
+          type: "QUERY",
+          payload: shoppingItems.data.listIngridients.items.map(
+            (item: any) => ({
+              ...item,
+              isBought: item.isBougt,
+            })
+          ),
+        });
+      } catch (err) {
+        onError(err.errors);
+      }
+    };
+
     getShoppingList();
 
     const subscriptionCreate = API.graphql(
@@ -117,7 +136,7 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
       ) => {
         const payload = eventData.value.data.onCreateIngridient;
         dispatch({ type: "ADD_SUBSCRIPTION", payload });
-      }
+      },
     });
 
     const subscriptionDelete = API.graphql(
@@ -128,7 +147,7 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
       ) => {
         const payload = eventData.value.data.onDeleteIngridient;
         dispatch({ type: "DELETE_SUBSCRIPTION", payload });
-      }
+      },
     });
 
     const subscriptionUpdate = API.graphql(
@@ -138,9 +157,9 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
         const payload = eventData.value.data.onUpdateIngridient;
         dispatch({
           type: "UPDATE_SUBSCRIPTION",
-          payload: { ...payload, isBought: payload.isBougt }
+          payload: { ...payload, isBought: payload.isBougt },
         });
-      }
+      },
     });
 
     return () => {
@@ -148,30 +167,13 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
       subscriptionDelete.unsubscribe();
       subscriptionUpdate.unsubscribe();
     };
-  }, []);
-
-  const getShoppingList = async () => {
-    try {
-      const shoppingItems = await API.graphql(
-        graphqlOperation(listIngridients)
-      );
-      dispatch({
-        type: "QUERY",
-        payload: shoppingItems.data.listIngridients.items.map((item: any) => ({
-          ...item,
-          isBought: item.isBougt
-        }))
-      });
-    } catch (err) {
-      onError(err.errors);
-    }
-  };
+  }, [onError]);
 
   return {
     shoppingItems,
     createNewShoppingItem,
     deleteShoppingItem,
-    updateShoppingItem
+    updateShoppingItem,
   };
 };
 

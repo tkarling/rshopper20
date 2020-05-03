@@ -14,26 +14,20 @@ import { Ingredient } from "../hooks/useIngredients";
 import ShoppingItem from "./ShoppingItem";
 import { Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
   },
   text: {},
   secondary: {
     display: "flex",
     justifyContent: "space-between",
-    paddingRight: 24
-  }
+    paddingRight: 24,
+  },
 }));
 
-const getSecondary = ({
-  item,
-  classes
-}: {
-  item: Ingredient;
-  classes: any;
-}) => (
+const Secondary = ({ item, classes }: { item: Ingredient; classes: any }) => (
   <div className={classes.secondary}>
     <div>{item.aisle}</div>
     <Typography variant="subtitle2" color="primary">
@@ -42,15 +36,57 @@ const getSecondary = ({
   </div>
 );
 
+const ReadOnlyShoppingItem = ({
+  item,
+  onCheckboxToggle: handleToggle,
+}: {
+  item: Ingredient;
+  onCheckboxToggle: (item: Ingredient) => void;
+}) => {
+  const classes = useStyles();
+  const labelId = `ingredient-${item.id}`;
+
+  return (
+    <ListItem
+      key={item.id}
+      role={undefined}
+      dense
+      button
+      onClick={() => handleToggle(item)}
+      // style={{ marginRight: -16 }}
+    >
+      <ListItemText
+        id={labelId}
+        primary={`${item.count} ${item.unit || ""} ${item.name}`}
+        secondary={<Secondary item={item} classes={classes} />}
+        className={classes.text}
+      />
+      <ListItemIcon style={{ minWidth: 0 }}>
+        <Checkbox
+          edge="start"
+          checked={item.isBought}
+          tabIndex={-1}
+          inputProps={{ "aria-labelledby": labelId }}
+        />
+      </ListItemIcon>
+      {/* <ListItemSecondaryAction>
+    <IconButton edge="end" aria-label="comments">
+      <CommentIcon />
+    </IconButton>
+  </ListItemSecondaryAction> */}
+    </ListItem>
+  );
+};
+
 export default function ShoppingList({
   shoppingItems,
-  actions
+  actions,
 }: {
   shoppingItems: Ingredient[];
   actions: any;
 }) {
   const classes = useStyles();
-  const handleToggle = (item: Ingredient) => () => {
+  const handleCheckboxToggle = (item: Ingredient) => {
     actions.updateShoppingItem({ ...item, isBought: !item.isBought });
   };
 
@@ -58,39 +94,13 @@ export default function ShoppingList({
     <div>
       <ShoppingItem actions={actions} />
       <List className={classes.root}>
-        {shoppingItems.map(item => {
-          const labelId = `ingredient-${item.id}`;
-
+        {shoppingItems.map((item) => {
           return (
-            <ListItem
+            <ReadOnlyShoppingItem
               key={item.id}
-              role={undefined}
-              dense
-              button
-              onClick={handleToggle(item)}
-              // style={{ marginRight: -16 }}
-            >
-              <ListItemText
-                id={labelId}
-                primary={`${item.count} ${item.unit || ""} ${item.name}`}
-                secondary={getSecondary({ item, classes })}
-                className={classes.text}
-              />
-              <ListItemIcon style={{ minWidth: 0 }}>
-                <Checkbox
-                  edge="start"
-                  checked={item.isBought}
-                  tabIndex={-1}
-                  // disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                />
-              </ListItemIcon>
-              {/* <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="comments">
-                  <CommentIcon />
-                </IconButton>
-              </ListItemSecondaryAction> */}
-            </ListItem>
+              item={item}
+              onCheckboxToggle={handleCheckboxToggle}
+            />
           );
         })}
       </List>

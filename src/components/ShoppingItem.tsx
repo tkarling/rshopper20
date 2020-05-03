@@ -39,31 +39,32 @@ const AISLES = ["Bakery", "Dairy", "Produce", "Misc"];
 const Field = ({
   name,
   width = "flex",
-  classes,
   inputs,
   handleChange,
   readOnly = false,
 }: {
   name: string;
   width?: string;
-  classes: any;
   inputs: any;
   handleChange: (event: any) => void;
   readOnly?: boolean;
-}) => (
-  <TextField
-    className={classes.textField}
-    style={width !== "flex" ? { width: Number(width) } : { flex: 1 }}
-    onChange={handleChange}
-    type="text"
-    name={name.toLowerCase()}
-    placeholder={name}
-    value={inputs[name.toLowerCase()] || ""}
-    inputProps={{
-      readOnly,
-    }}
-  />
-);
+}) => {
+  const classes = useStyles();
+  return (
+    <TextField
+      className={classes.textField}
+      style={width !== "flex" ? { width: Number(width) } : { flex: 1 }}
+      onChange={handleChange}
+      type="text"
+      name={name.toLowerCase()}
+      placeholder={name}
+      value={inputs[name.toLowerCase()] || ""}
+      inputProps={{
+        readOnly,
+      }}
+    />
+  );
+};
 
 const emptyInputs = {
   name: undefined,
@@ -96,7 +97,7 @@ const ShoppingItem = ({ actions }: { actions: any }) => {
     }
   };
 
-  const common = { classes, inputs, handleChange };
+  const common = { inputs, handleChange };
   return (
     <div>
       <form>
@@ -118,7 +119,9 @@ const ShoppingItem = ({ actions }: { actions: any }) => {
                   onChange={handleChange}
                 >
                   {AISLES.map((aisle) => (
-                    <MenuItem value={aisle.toLowerCase()}>{aisle}</MenuItem>
+                    <MenuItem key={aisle} value={aisle.toLowerCase()}>
+                      {aisle}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
