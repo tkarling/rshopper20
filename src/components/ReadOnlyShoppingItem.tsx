@@ -11,6 +11,9 @@ import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   text: {},
+  lineTrough: {
+    textDecoration: "line-through",
+  },
   secondary: {
     display: "flex",
     justifyContent: "space-between",
@@ -18,14 +21,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Secondary = ({ item, classes }: { item: Ingredient; classes: any }) => (
-  <div className={classes.secondary}>
-    <div>{item.aisle}</div>
-    <Typography variant="subtitle2" color="primary">
-      Base List
-    </Typography>
+const lineThroughClass = ({
+  item,
+  classes,
+}: {
+  item: Ingredient;
+  classes: any;
+}) => (item.isBought ? classes.lineTrough : {});
+
+const Primary = ({ item, classes }: { item: Ingredient; classes: any }) => (
+  <div className={lineThroughClass({ item, classes })}>
+    {`${item.count} ${item.unit || ""} ${item.name}`}
   </div>
 );
+
+const Secondary = ({ item, classes }: { item: Ingredient; classes: any }) => {
+  return (
+    <div className={classes.secondary}>
+      <div className={lineThroughClass({ item, classes })}>{item.aisle}</div>
+      <Typography variant="subtitle2" color="primary">
+        <div className={lineThroughClass({ item, classes })}>Base List</div>
+      </Typography>
+    </div>
+  );
+};
 
 const ReadOnlyShoppingItem = ({
   item,
@@ -47,7 +66,7 @@ const ReadOnlyShoppingItem = ({
     >
       <ListItemText
         id={labelId}
-        primary={`${item.count} ${item.unit || ""} ${item.name}`}
+        primary={<Primary item={item} classes={classes} />}
         secondary={<Secondary item={item} classes={classes} />}
         className={classes.text}
       />

@@ -6,6 +6,8 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import SaveIcon from "@material-ui/icons/Save";
+import AddIcon from "@material-ui/icons/Add";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import { Ingredient } from "../hooks/useIngredients";
 
@@ -13,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: 10,
     display: "flex",
+    border: "1px solid #3f51b5",
   },
   inputsContainer: {
     display: "flex",
@@ -22,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   buttonContainer: {
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-end",
   },
   row: {
     display: "flex",
@@ -116,6 +120,16 @@ const ShoppingItem = ({
       console.error("Error submitting item", error);
     }
   };
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    try {
+      await actions.deleteShoppingItem({ ...item, ...inputs });
+      actions.setEditedItem({});
+    } catch (error) {
+      console.error("Error deleting item", error);
+    }
+  };
 
   const common = { inputs, handleChange };
   return (
@@ -149,12 +163,22 @@ const ShoppingItem = ({
             </div>
           </div>
           <div className={classes.buttonContainer}>
+            {item && (
+              <IconButton
+                aria-label="delete"
+                color="secondary"
+                onClick={handleDelete}
+                style={{ padding: "8px 12px" }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
             <IconButton
               aria-label="submit"
               color="primary"
               onClick={handleSubmit}
             >
-              <SaveIcon />
+              {item ? <SaveIcon /> : <AddIcon />}
             </IconButton>
           </div>
         </div>

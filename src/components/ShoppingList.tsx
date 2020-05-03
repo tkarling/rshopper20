@@ -26,7 +26,7 @@ export default function ShoppingList({
 
   return (
     <div>
-      <ShoppingItem actions={actions} />
+      {!editedItem?.id && <ShoppingItem actions={actions} />}
       <List className={classes.root}>
         {shoppingItems.map((item) =>
           editedItem?.id === item.id ? (
