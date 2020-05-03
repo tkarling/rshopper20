@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
@@ -22,14 +22,33 @@ export default function ShoppingList({
   actions: any;
 }) {
   const classes = useStyles();
+  const [editedItem, setEditedItem] = useState({} as Ingredient);
 
   return (
     <div>
       <ShoppingItem actions={actions} />
       <List className={classes.root}>
-        {shoppingItems.map((item) => (
-          <ReadOnlyShoppingItem key={item.id} item={item} actions={actions} />
-        ))}
+        {shoppingItems.map((item) =>
+          editedItem?.id === item.id ? (
+            <ShoppingItem
+              key={item.id}
+              item={item}
+              actions={{ ...actions, setEditedItem }}
+            />
+          ) : (
+            <ReadOnlyShoppingItem
+              key={item.id}
+              item={item}
+              actions={{
+                ...actions,
+                setEditedItem: editedItem?.id ? () => {} : setEditedItem,
+                toggleIsBought: editedItem?.id
+                  ? () => {}
+                  : actions.toggleIsBought,
+              }}
+            />
+          )
+        )}
       </List>
     </div>
   );

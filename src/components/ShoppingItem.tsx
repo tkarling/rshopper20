@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
@@ -6,6 +6,8 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import SaveIcon from "@material-ui/icons/Save";
+
+import { Ingredient } from "../hooks/useIngredients";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,13 +73,26 @@ const emptyInputs = {
   unit: undefined,
   aisle: undefined,
   description: undefined,
-  recipe: "BaseList",
+  recipe: "Base List",
   count: 1,
 };
 
-const ShoppingItem = ({ actions }: { actions: any }) => {
+const ShoppingItem = ({
+  item,
+  actions,
+}: {
+  item?: Ingredient;
+  actions: any;
+}) => {
   const classes = useStyles();
   const [inputs, setInputs] = useState(emptyInputs);
+
+  useEffect(() => {
+    if (item) {
+      setInputs({ ...item, recipe: "Base List" } as any);
+    }
+  }, [item]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<any>
   ) => {
@@ -90,10 +105,15 @@ const ShoppingItem = ({ actions }: { actions: any }) => {
     inputs.recipe = undefined as any; // TODO: remove this line after DB supports recipe
     inputs.unit = undefined as any; // TODO: remove this line after DB supports unit
     try {
-      await actions.createNewShoppingItem({ ...inputs });
+      if (item) {
+        await actions.updateShoppingItem({ ...item, ...inputs });
+        actions.setEditedItem({});
+      } else {
+        await actions.createNewShoppingItem({ ...inputs });
+      }
       setInputs(emptyInputs);
     } catch (error) {
-      console.error(Error);
+      console.error("Error submitting item", error);
     }
   };
 
