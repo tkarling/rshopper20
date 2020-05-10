@@ -116,6 +116,7 @@ const ShoppingItem = ({
         await actions.createNewShoppingItem({ ...inputs });
       }
       setInputs(emptyInputs);
+      actions.setEditedItem({});
     } catch (error) {
       console.error("Error submitting item", error);
     }

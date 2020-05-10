@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
+import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/AddCircle";
 
 import { Ingredient } from "../hooks/useIngredients";
 import ShoppingItem from "./ShoppingItem";
@@ -26,10 +28,21 @@ export default function ShoppingList({
 
   return (
     <div>
-      {!editedItem?.id && <ShoppingItem actions={actions} />}
+      {!editedItem.id && (
+        <IconButton
+          aria-label="submit"
+          color="primary"
+          onClick={() => setEditedItem({ id: "add" } as any)}
+        >
+          <AddIcon />
+        </IconButton>
+      )}
+      {editedItem.id === "add" && (
+        <ShoppingItem actions={{ ...actions, setEditedItem }} />
+      )}
       <List className={classes.root}>
         {shoppingItems.map((item) =>
-          editedItem?.id === item.id ? (
+          editedItem.id === item.id ? (
             <ShoppingItem
               key={item.id}
               item={item}
@@ -41,8 +54,8 @@ export default function ShoppingList({
               item={item}
               actions={{
                 ...actions,
-                setEditedItem: editedItem?.id ? () => {} : setEditedItem,
-                toggleIsBought: editedItem?.id
+                setEditedItem: editedItem.id ? () => {} : setEditedItem,
+                toggleIsBought: editedItem.id
                   ? () => {}
                   : actions.toggleIsBought,
               }}
