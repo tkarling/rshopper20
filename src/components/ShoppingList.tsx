@@ -23,6 +23,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Buttons = ({
+  showBought,
+  actions,
+}: {
+  showBought: boolean;
+  actions: any;
+}) => {
+  const classes = useStyles();
+  const { setEditedItem, setShowBought } = actions;
+
+  return (
+    <div className={classes.buttonContainer}>
+      <IconButton
+        aria-label="submit"
+        color="primary"
+        onClick={() => setEditedItem({ id: "add" } as any)}
+      >
+        <AddIcon />
+      </IconButton>
+      <FormControlLabel
+        value="start"
+        control={
+          <Checkbox
+            checked={showBought}
+            onClick={() => {
+              setShowBought((value: boolean) => !value);
+            }}
+          />
+        }
+        label="Show Bought"
+        labelPlacement="start"
+      />
+    </div>
+  );
+};
+
 export default function ShoppingList({
   shoppingItems,
   actions,
@@ -36,32 +72,15 @@ export default function ShoppingList({
   const shownItems = showBought
     ? shoppingItems
     : shoppingItems.filter((item) => !item.isBought);
+  const isEditing = !!editedItem.id;
 
   return (
     <div>
-      {!editedItem.id && (
-        <div className={classes.buttonContainer}>
-          <IconButton
-            aria-label="submit"
-            color="primary"
-            onClick={() => setEditedItem({ id: "add" } as any)}
-          >
-            <AddIcon />
-          </IconButton>
-          <FormControlLabel
-            value="start"
-            control={
-              <Checkbox
-                checked={showBought}
-                onClick={() => {
-                  setShowBought((value) => !value);
-                }}
-              />
-            }
-            label="Show Bought"
-            labelPlacement="start"
-          />
-        </div>
+      {!isEditing && (
+        <Buttons
+          showBought={showBought}
+          actions={{ setEditedItem, setShowBought }}
+        />
       )}
       {editedItem.id === "add" && (
         <ShoppingItem actions={{ ...actions, setEditedItem }} />
@@ -80,10 +99,8 @@ export default function ShoppingList({
               item={item}
               actions={{
                 ...actions,
-                setEditedItem: editedItem.id ? () => {} : setEditedItem,
-                toggleIsBought: editedItem.id
-                  ? () => {}
-                  : actions.toggleIsBought,
+                setEditedItem: isEditing ? () => {} : setEditedItem,
+                toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,
               }}
             />
           )
