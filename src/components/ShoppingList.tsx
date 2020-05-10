@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/AddCircle";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import { Ingredient } from "../hooks/useIngredients";
 import ShoppingItem from "./ShoppingItem";
@@ -13,6 +15,11 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     backgroundColor: theme.palette.background.paper,
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    paddingRight: 25,
   },
 }));
 
@@ -25,23 +32,42 @@ export default function ShoppingList({
 }) {
   const classes = useStyles();
   const [editedItem, setEditedItem] = useState({} as Ingredient);
+  const [showBought, setShowBought] = useState(true);
+  const shownItems = showBought
+    ? shoppingItems
+    : shoppingItems.filter((item) => !item.isBought);
 
   return (
     <div>
       {!editedItem.id && (
-        <IconButton
-          aria-label="submit"
-          color="primary"
-          onClick={() => setEditedItem({ id: "add" } as any)}
-        >
-          <AddIcon />
-        </IconButton>
+        <div className={classes.buttonContainer}>
+          <IconButton
+            aria-label="submit"
+            color="primary"
+            onClick={() => setEditedItem({ id: "add" } as any)}
+          >
+            <AddIcon />
+          </IconButton>
+          <FormControlLabel
+            value="start"
+            control={
+              <Checkbox
+                checked={showBought}
+                onClick={() => {
+                  setShowBought((value) => !value);
+                }}
+              />
+            }
+            label="Show Bought"
+            labelPlacement="start"
+          />
+        </div>
       )}
       {editedItem.id === "add" && (
         <ShoppingItem actions={{ ...actions, setEditedItem }} />
       )}
       <List className={classes.root}>
-        {shoppingItems.map((item) =>
+        {shownItems.map((item) =>
           editedItem.id === item.id ? (
             <ShoppingItem
               key={item.id}

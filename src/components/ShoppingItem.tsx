@@ -8,6 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import SaveIcon from "@material-ui/icons/Save";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
+import CloseIcon from "@material-ui/icons/Close";
 
 import { Ingredient } from "../hooks/useIngredients";
 
@@ -121,11 +122,13 @@ const ShoppingItem = ({
       console.error("Error submitting item", error);
     }
   };
-  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteClose = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
     try {
-      await actions.deleteShoppingItem({ ...item, ...inputs });
+      if (item) {
+        await actions.deleteShoppingItem({ ...item, ...inputs });
+      }
       actions.setEditedItem({});
     } catch (error) {
       console.error("Error deleting item", error);
@@ -164,16 +167,14 @@ const ShoppingItem = ({
             </div>
           </div>
           <div className={classes.buttonContainer}>
-            {item && (
-              <IconButton
-                aria-label="delete"
-                color="secondary"
-                onClick={handleDelete}
-                style={{ padding: "8px 12px" }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            )}
+            <IconButton
+              aria-label="delete"
+              color="secondary"
+              onClick={handleDeleteClose}
+              style={{ padding: "8px 12px" }}
+            >
+              {item ? <DeleteIcon /> : <CloseIcon />}
+            </IconButton>
             <IconButton
               aria-label="submit"
               color="primary"
