@@ -61,17 +61,25 @@ const Buttons = ({
 
 export default function ShoppingList({
   shoppingItems,
+  searchString,
   actions,
 }: {
   shoppingItems: Ingredient[];
+  searchString: string;
   actions: any;
 }) {
   const classes = useStyles();
   const [editedItem, setEditedItem] = useState({} as Ingredient);
   const [showBought, setShowBought] = useState(true);
-  const shownItems = showBought
+  const shownItems = (showBought
     ? shoppingItems
-    : shoppingItems.filter((item) => !item.isBought);
+    : shoppingItems.filter((item) => !item.isBought)
+  ).filter(
+    (item) =>
+      !searchString ||
+      item.name.includes(searchString) ||
+      item.aisle.includes(searchString)
+  );
   const isEditing = !!editedItem.id;
 
   return (
