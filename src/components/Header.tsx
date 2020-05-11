@@ -85,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PrimarySearchAppBar({
   page = "Shopping List" as Page,
-  searchString = "",
   actions = {
     setPage: (page: Page) => {
       console.log("called setPage", page);
@@ -96,7 +95,6 @@ export default function PrimarySearchAppBar({
   },
 }: {
   page?: Page;
-  searchString: string;
   actions: {
     setPage: (page: Page) => void;
     setSearchString: (searchString: string) => void;
@@ -104,44 +102,44 @@ export default function PrimarySearchAppBar({
 }) {
   const { setPage, setSearchString } = actions;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [profileAnchorEl, setProfileAnchorEl] = React.useState(null);
+  const isProfileMenuOpen = Boolean(profileAnchorEl);
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [mobileAnchorEl, setMobileAnchorEl] = React.useState(null);
+  const isMobileMenuOpen = Boolean(mobileAnchorEl);
 
   const handleProfileMenuOpen = (event: any) => {
-    setAnchorEl(event.currentTarget);
+    setProfileAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileAnchorEl(null);
+  };
+
+  const handleMobileMenuOpen = (event: any) => {
+    setMobileAnchorEl(event.currentTarget);
   };
 
   const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-    handleMobileMenuClose();
+    setMobileAnchorEl(null);
   };
 
   const handleSetPage = (page: Page) => {
     setPage(page);
-    handleMenuClose();
-  };
-  const handleMobileMenuOpen = (event: any) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+    handleMobileMenuClose();
+    handleProfileMenuClose();
   };
 
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
+  const profileMenuId = "primary-search-account-menu-profile";
+  const renderProfileMenu = (
     <Menu
-      anchorEl={anchorEl}
+      anchorEl={profileAnchorEl}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={menuId}
+      id={profileMenuId}
       keepMounted
       transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
+      open={isProfileMenuOpen}
+      onClose={handleProfileMenuClose}
     >
       {page !== "Profile" && (
         <MenuItem onClick={() => handleSetPage("Profile" as Page)}>
@@ -160,7 +158,7 @@ export default function PrimarySearchAppBar({
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
-      anchorEl={mobileMoreAnchorEl}
+      anchorEl={mobileAnchorEl}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
       keepMounted
@@ -257,7 +255,7 @@ export default function PrimarySearchAppBar({
             <IconButton
               edge="end"
               aria-label="account of current user"
-              aria-controls={menuId}
+              aria-controls={profileMenuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
               color="inherit"
@@ -279,7 +277,7 @@ export default function PrimarySearchAppBar({
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
+      {renderProfileMenu}
     </div>
   );
 }

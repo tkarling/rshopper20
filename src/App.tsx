@@ -16,11 +16,7 @@ function App() {
   const [searchString, setSearchString] = useState("");
   return (
     <div>
-      <Header
-        page={page}
-        searchString={searchString}
-        actions={{ setPage, setSearchString }}
-      />
+      <Header page={page} actions={{ setPage, setSearchString }} />
       {page === "Shopping List" && (
         <ShoppingList
           searchString={searchString}
