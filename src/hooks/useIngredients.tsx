@@ -109,6 +109,10 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
     updateShoppingItem({ ...item, isBought: !item.isBought });
   };
 
+  const toggleIsOnList = (item: Ingredient) => {
+    updateShoppingItem({ ...item, isOnList: !item.isOnList });
+  };
+
   const [shoppingItems, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
     const getShoppingList = async () => {
@@ -179,6 +183,7 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
     deleteShoppingItem,
     updateShoppingItem,
     toggleIsBought,
+    toggleIsOnList,
   };
 };
 

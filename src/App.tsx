@@ -19,12 +19,23 @@ function App() {
       <Header page={page} actions={{ setPage, setSearchString }} />
       {page === "Shopping List" && (
         <ShoppingList
+          page={page}
+          searchString={searchString}
+          shoppingItems={shoppingItems.filter((item) => item.isOnList)}
+          actions={actions}
+        />
+      )}
+      {page === "Shopping History" && (
+        <ShoppingList
+          page={page}
           searchString={searchString}
           shoppingItems={shoppingItems}
           actions={actions}
         />
       )}
-      {page !== "Shopping List" && <GenericPage page={page} />}
+      {!["Shopping List", "Shopping History"].includes(page) && (
+        <GenericPage page={page} />
+      )}
       <Error errors={errors} onCloseError={onCloseError} />
     </div>
   );

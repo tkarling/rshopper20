@@ -10,6 +10,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Ingredient } from "../hooks/useIngredients";
 import ShoppingItem from "./ShoppingItem";
 import ReadOnlyShoppingItem from "./ReadOnlyShoppingItem";
+import { Page } from "../types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,14 +25,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Buttons = ({
-  showBought,
+  page,
+  showChecked,
   actions,
 }: {
-  showBought: boolean;
+  page: Page;
+  showChecked: boolean;
   actions: any;
 }) => {
   const classes = useStyles();
-  const { setEditedItem, setShowBought } = actions;
+  const { setEditedItem, setShowChecked } = actions;
+  const label = page === "Shopping List" ? "Show Bought" : "Show On List";
 
   return (
     <div className={classes.buttonContainer}>
@@ -46,13 +50,13 @@ const Buttons = ({
         value="start"
         control={
           <Checkbox
-            checked={showBought}
+            checked={showChecked}
             onClick={() => {
-              setShowBought((value: boolean) => !value);
+              setShowChecked((value: boolean) => !value);
             }}
           />
         }
-        label="Show Bought"
+        label={label}
         labelPlacement="start"
       />
     </div>
@@ -60,20 +64,24 @@ const Buttons = ({
 };
 
 export default function ShoppingList({
+  page,
   shoppingItems,
   searchString,
   actions,
 }: {
+  page: Page;
   shoppingItems: Ingredient[];
   searchString: string;
   actions: any;
 }) {
   const classes = useStyles();
   const [editedItem, setEditedItem] = useState({} as Ingredient);
-  const [showBought, setShowBought] = useState(true);
-  const shownItems = (showBought
+  const [showChecked, setShowChecked] = useState(true);
+  const shownItems = (showChecked
     ? shoppingItems
-    : shoppingItems.filter((item) => !item.isBought)
+    : shoppingItems.filter((item) =>
+        page === "Shopping List" ? !item.isBought : !item.isOnList
+      )
   ).filter(
     (item) =>
       !searchString ||
@@ -81,13 +89,13 @@ export default function ShoppingList({
       item.aisle.includes(searchString)
   );
   const isEditing = !!editedItem.id;
-
   return (
     <div>
       {!isEditing && (
         <Buttons
-          showBought={showBought}
-          actions={{ setEditedItem, setShowBought }}
+          page={page}
+          showChecked={showChecked}
+          actions={{ setEditedItem, setShowChecked }}
         />
       )}
       {editedItem.id === "add" && (
@@ -104,11 +112,13 @@ export default function ShoppingList({
           ) : (
             <ReadOnlyShoppingItem
               key={item.id}
+              page={page}
               item={item}
               actions={{
                 ...actions,
                 setEditedItem: isEditing ? () => {} : setEditedItem,
                 toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,
+                toggleIsOnList: isEditing ? () => {} : actions.toggleIsOnList,
               }}
             />
           )
