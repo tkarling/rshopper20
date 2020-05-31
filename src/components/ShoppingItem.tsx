@@ -11,6 +11,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 
 import { Ingredient } from "../hooks/useIngredients";
+import { Page } from "../types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -83,9 +84,11 @@ const emptyInputs = {
 };
 
 const ShoppingItem = ({
+  page,
   item,
   actions,
 }: {
+  page: Page;
   item?: Ingredient;
   actions: any;
 }) => {
@@ -127,7 +130,11 @@ const ShoppingItem = ({
     e.preventDefault();
     try {
       if (item) {
-        await actions.deleteShoppingItem({ ...item, ...inputs });
+        if (page === "Shopping List") {
+          await actions.toggleIsOnList(item);
+        } else {
+          await actions.deleteShoppingItem(item);
+        }
       }
       actions.setEditedItem({});
     } catch (error) {

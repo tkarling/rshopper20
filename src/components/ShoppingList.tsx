@@ -99,13 +99,14 @@ export default function ShoppingList({
         />
       )}
       {editedItem.id === "add" && (
-        <ShoppingItem actions={{ ...actions, setEditedItem }} />
+        <ShoppingItem page={page} actions={{ ...actions, setEditedItem }} />
       )}
       <List className={classes.root}>
         {shownItems.map((item) =>
           editedItem.id === item.id ? (
             <ShoppingItem
               key={item.id}
+              page={page}
               item={item}
               actions={{ ...actions, setEditedItem }}
             />
