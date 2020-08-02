@@ -72,7 +72,7 @@ const Secondary = ({
   );
 };
 
-const ReadOnlyShoppingItem = ({
+const ReadOnlyItem = ({
   page,
   item,
   actions,
@@ -117,4 +117,4 @@ const ReadOnlyShoppingItem = ({
   );
 };
 
-export default ReadOnlyShoppingItem;
+export default ReadOnlyItem;

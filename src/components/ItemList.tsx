@@ -10,7 +10,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import { Ingredient, Recipe } from "../hooks/useIngredients";
 import ShoppingItem from "./ShoppingItem";
-import ReadOnlyShoppingItem from "./ReadOnlyShoppingItem";
+import ReadOnlyItem from "./ReadOnlyItem";
 import { Page } from "../types";
 
 const useStyles = makeStyles((theme) => ({
@@ -103,15 +103,15 @@ const getShowItems = ({
       (item as Recipe).tag?.includes(searchString)
   );
 
-export default function ShoppingList({
+export default function ItemList({
   page,
-  shoppingItems,
+  items: shoppingItems,
   searchString,
   actions,
   recipeName,
 }: {
   page: Page;
-  shoppingItems?: Ingredient[];
+  items?: Ingredient[];
   searchString: string;
   actions: any;
   recipeName?: string;
@@ -147,7 +147,7 @@ export default function ShoppingList({
               actions={{ ...actions, setEditedItem }}
             />
           ) : (
-            <ReadOnlyShoppingItem
+            <ReadOnlyItem
               key={item.id}
               page={page}
               item={item}
