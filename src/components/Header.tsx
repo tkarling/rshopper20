@@ -13,6 +13,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import HistoryIcon from "@material-ui/icons/History";
+import FormatListBulleted from "@material-ui/icons/FormatListBulleted";
 import SignOutIcon from "@material-ui/icons/ExitToApp";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import { signOut } from "../hooks/authUtils";
@@ -93,12 +94,14 @@ export default function PrimarySearchAppBar({
       console.log("called setSearchString", searchString);
     },
   },
+  recipeName,
 }: {
   page?: Page;
   actions: {
     setPage: (page: Page) => void;
     setSearchString: (searchString: string) => void;
   };
+  recipeName?: string;
 }) {
   const { setPage, setSearchString } = actions;
   const classes = useStyles();
@@ -184,6 +187,14 @@ export default function PrimarySearchAppBar({
           <p>Shopping History</p>
         </MenuItem>
       )}
+      {page !== "Recipe List" && (
+        <MenuItem onClick={() => handleSetPage("Recipe List" as Page)}>
+          <IconButton aria-label="show Recipe List" color="inherit">
+            <FormatListBulleted />
+          </IconButton>
+          <p>Recipe List</p>
+        </MenuItem>
+      )}
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           aria-label="account of current user"
@@ -197,7 +208,7 @@ export default function PrimarySearchAppBar({
         <p>Profile</p>
       </MenuItem>
       <MenuItem onClick={() => signOut()}>
-        <IconButton aria-label="show Shopping History" color="inherit">
+        <IconButton aria-label="sign out" color="inherit">
           <SignOutIcon />
         </IconButton>
         <p>Sign Out</p>
@@ -218,7 +229,7 @@ export default function PrimarySearchAppBar({
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            {page}
+            {recipeName || page}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -251,6 +262,13 @@ export default function PrimarySearchAppBar({
               onClick={() => handleSetPage("Shopping History" as Page)}
             >
               <HistoryIcon />
+            </IconButton>
+            <IconButton
+              aria-label="show Recipe List"
+              color="inherit"
+              onClick={() => handleSetPage("Recipe List" as Page)}
+            >
+              <FormatListBulleted />
             </IconButton>
             <IconButton
               edge="end"

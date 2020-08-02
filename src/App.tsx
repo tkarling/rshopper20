@@ -11,31 +11,58 @@ const GenericPage = ({ page }: { page: Page }) => <div>{page}</div>;
 
 function App() {
   const [page, setPage] = useState("Shopping List" as Page);
+  const [shownRecipe, setShownRecipe] = useState("");
+  const [searchString, setSearchString] = useState("");
+
   const { errors, onError, onCloseError } = useErrors();
   const { shoppingItems, ...actions } = useIngredients({ onError });
-  const [searchString, setSearchString] = useState("");
+  const [recipes] = useState([
+    { id: "Rosolli", name: "Rosolli", aisle: "Christmas", isOnList: false },
+  ]);
+  const common = { page, searchString, actions };
+
   return (
     <div>
-      <Header page={page} actions={{ setPage, setSearchString }} />
+      <Header
+        page={page}
+        actions={{ setPage, setSearchString }}
+        recipeName={shownRecipe}
+      />
       {page === "Shopping List" && (
         <ShoppingList
-          page={page}
-          searchString={searchString}
+          {...common}
           shoppingItems={shoppingItems.filter((item) => item.isOnList)}
-          actions={actions}
         />
       )}
       {page === "Shopping History" && (
+        <ShoppingList {...common} shoppingItems={shoppingItems} />
+      )}
+      {page === "Recipe List" && (
         <ShoppingList
-          page={page}
-          searchString={searchString}
-          shoppingItems={shoppingItems}
-          actions={actions}
+          {...common}
+          shoppingItems={recipes}
+          actions={{
+            toggleIsOnList: () => console.log("called toggleIsOnList"),
+            setRecipe: (recipe: any) => {
+              setShownRecipe(recipe.name);
+              setPage("Recipe");
+            },
+          }}
         />
       )}
-      {!["Shopping List", "Shopping History"].includes(page) && (
-        <GenericPage page={page} />
+      {page === "Recipe" && (
+        <ShoppingList
+          {...common}
+          shoppingItems={shoppingItems.filter((item) => {
+            console.log("App -> shownRecipe", shownRecipe, item);
+            return item.recipe === shownRecipe;
+          })}
+          recipeName={shownRecipe}
+        />
       )}
+      {!["Shopping List", "Shopping History", "Recipe List", "Recipe"].includes(
+        page
+      ) && <GenericPage page={page} />}
       <Error errors={errors} onCloseError={onCloseError} />
     </div>
   );

@@ -20,11 +20,20 @@ export type Ingredient = {
   id?: string;
   name: string;
   unit?: string;
-  description: string;
-  aisle: string;
-  count: number;
-  isBought: boolean;
-  isOnList: boolean;
+  description?: string;
+  aisle?: string;
+  count?: number;
+  isBought?: boolean;
+  isOnList?: boolean;
+  recipe?: string;
+};
+
+export type Recipe = {
+  id?: string;
+  name: string;
+  description?: string;
+  isOnList?: boolean;
+  tag?: string;
 };
 
 type AppState = {
@@ -97,7 +106,12 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
     try {
       await API.graphql(
         graphqlOperation(updateIngridient, {
-          input: { ...item, isBougt: item.isBought, isBought: undefined },
+          input: {
+            ...item,
+            isBougt: item.isBought,
+            isBought: undefined,
+            recipe: undefined,
+          },
         })
       );
     } catch (err) {
@@ -126,6 +140,7 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
             (item: any) => ({
               ...item,
               isBought: item.isBougt,
+              recipe: item.name === "red beet" ? "Rosolli" : "Base List",
             })
           ),
         });
@@ -165,7 +180,11 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
         const payload = eventData.value.data.onUpdateIngridient;
         dispatch({
           type: "UPDATE_SUBSCRIPTION",
-          payload: { ...payload, isBought: payload.isBougt },
+          payload: {
+            ...payload,
+            isBought: payload.isBougt,
+            recipe: payload.name === "red beet" ? "Rosolli" : "Base List",
+          },
         });
       },
     });

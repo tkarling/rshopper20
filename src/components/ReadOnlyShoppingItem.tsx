@@ -45,7 +45,7 @@ const Primary = ({
   classes: any;
 }) => (
   <div className={lineThroughClass({ page, item, classes })}>
-    {`${item.count} ${item.unit || ""} ${item.name}`}
+    {`${item.count || ""} ${item.unit || ""} ${item.name}`}
   </div>
 );
 
@@ -65,7 +65,7 @@ const Secondary = ({
       </div>
       <Typography variant="subtitle2" color="primary">
         <div className={lineThroughClass({ page, item, classes })}>
-          Base List
+          {item.recipe}
         </div>
       </Typography>
     </div>
@@ -85,7 +85,7 @@ const ReadOnlyShoppingItem = ({
   const labelId = `ingredient-${item.id}`;
 
   const checked = page === "Shopping List" ? item.isBought : item.isOnList;
-  const onClick =
+  const onCheckBoxClick =
     page === "Shopping List"
       ? () => actions.toggleIsBought(item)
       : () => actions.toggleIsOnList(item);
@@ -96,7 +96,7 @@ const ReadOnlyShoppingItem = ({
       role={undefined}
       dense
       button
-      onClick={() => actions.setEditedItem(item)}
+      onClick={() => actions.onClick(item)}
     >
       <ListItemText
         id={labelId}
@@ -110,7 +110,7 @@ const ReadOnlyShoppingItem = ({
           checked={checked}
           tabIndex={-1}
           inputProps={{ "aria-labelledby": labelId }}
-          onClick={onClick}
+          onClick={onCheckBoxClick}
         />
       </ListItemSecondaryAction>
     </ListItem>

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import List from "@material-ui/core/List";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/AddCircle";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-import { Ingredient } from "../hooks/useIngredients";
+import { Ingredient, Recipe } from "../hooks/useIngredients";
 import ShoppingItem from "./ShoppingItem";
 import ReadOnlyShoppingItem from "./ReadOnlyShoppingItem";
 import { Page } from "../types";
@@ -20,7 +21,13 @@ const useStyles = makeStyles((theme) => ({
   buttonContainer: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingRight: 25,
+  },
+  title: {
+    fontWeight: 600,
+    padding: "10px 16px",
+    flex: 1,
   },
 }));
 
@@ -28,14 +35,17 @@ const Buttons = ({
   page,
   showChecked,
   actions,
+  recipeName,
 }: {
   page: Page;
   showChecked: boolean;
   actions: any;
+  recipeName?: string;
 }) => {
   const classes = useStyles();
   const { setEditedItem, setShowChecked } = actions;
   const label = page === "Shopping List" ? "Show Bought" : "Show On List";
+  const matches = useMediaQuery("(min-width:600px)");
 
   return (
     <div className={classes.buttonContainer}>
@@ -46,6 +56,7 @@ const Buttons = ({
       >
         <AddIcon />
       </IconButton>
+      {!matches && <div className={classes.title}>{recipeName || page}</div>}
       <FormControlLabel
         value="start"
         control={
@@ -63,31 +74,55 @@ const Buttons = ({
   );
 };
 
+const getShowItems = ({
+  shoppingItems,
+  page,
+  searchString,
+  showChecked,
+}: {
+  shoppingItems: Ingredient[] | Recipe[];
+  page: Page;
+  searchString: string;
+  showChecked: boolean;
+}) =>
+  (showChecked
+    ? shoppingItems
+    : (shoppingItems as (
+        | Ingredient
+        | Recipe
+      )[]).filter((item: Ingredient | Recipe) =>
+        page === "Shopping List"
+          ? !(item as Ingredient).isBought
+          : !item.isOnList
+      )
+  ).filter(
+    (item: Ingredient | Recipe) =>
+      !searchString ||
+      item.name?.includes(searchString) ||
+      (item as Ingredient).aisle?.includes(searchString) ||
+      (item as Recipe).tag?.includes(searchString)
+  );
+
 export default function ShoppingList({
   page,
   shoppingItems,
   searchString,
   actions,
+  recipeName,
 }: {
   page: Page;
-  shoppingItems: Ingredient[];
+  shoppingItems?: Ingredient[];
   searchString: string;
   actions: any;
+  recipeName?: string;
 }) {
   const classes = useStyles();
-  const [editedItem, setEditedItem] = useState({} as Ingredient);
+
+  const [editedItem, setEditedItem] = useState({} as Ingredient | Recipe);
   const [showChecked, setShowChecked] = useState(true);
-  const shownItems = (showChecked
-    ? shoppingItems
-    : shoppingItems.filter((item) =>
-        page === "Shopping List" ? !item.isBought : !item.isOnList
-      )
-  ).filter(
-    (item) =>
-      !searchString ||
-      item.name.includes(searchString) ||
-      item.aisle.includes(searchString)
-  );
+  const shownItems = shoppingItems
+    ? getShowItems({ shoppingItems, page, searchString, showChecked })
+    : [];
   const isEditing = !!editedItem.id;
   return (
     <div>
@@ -96,6 +131,7 @@ export default function ShoppingList({
           page={page}
           showChecked={showChecked}
           actions={{ setEditedItem, setShowChecked }}
+          recipeName={recipeName}
         />
       )}
       {editedItem.id === "add" && (
@@ -117,7 +153,11 @@ export default function ShoppingList({
               item={item}
               actions={{
                 ...actions,
-                setEditedItem: isEditing ? () => {} : setEditedItem,
+                onClick: isEditing
+                  ? () => {}
+                  : page === "Recipe List"
+                  ? actions.setRecipe
+                  : setEditedItem,
                 toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,
                 toggleIsOnList: isEditing ? () => {} : actions.toggleIsOnList,
               }}
