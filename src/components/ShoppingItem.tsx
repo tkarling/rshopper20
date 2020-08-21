@@ -74,32 +74,34 @@ const Field = ({
   );
 };
 
-const emptyInputs = {
+const emptyInputs = (shownRecipe: string) => ({
   name: undefined,
   unit: undefined,
   aisle: undefined,
   description: undefined,
-  recipe: "Base List",
+  recipe: shownRecipe || "Base List",
   count: 1,
-};
+});
 
 const ShoppingItem = ({
   page,
+  shownRecipe,
   item,
   actions,
 }: {
   page: Page;
+  shownRecipe: string;
   item?: Ingredient;
   actions: any;
 }) => {
   const classes = useStyles();
-  const [inputs, setInputs] = useState(emptyInputs);
+  const [inputs, setInputs] = useState(() => emptyInputs(shownRecipe));
 
   useEffect(() => {
     if (item) {
-      setInputs({ ...item, recipe: "Base List" } as any);
+      setInputs({ ...item, recipe: shownRecipe || "Base List" } as any);
     }
-  }, [item]);
+  }, [item, shownRecipe]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<any>
@@ -119,7 +121,7 @@ const ShoppingItem = ({
       } else {
         await actions.createNewShoppingItem({ ...inputs });
       }
-      setInputs(emptyInputs);
+      setInputs(emptyInputs(shownRecipe));
       actions.setEditedItem({});
     } catch (error) {
       console.error("Error submitting item", error);

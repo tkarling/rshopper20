@@ -105,12 +105,14 @@ const getShowItems = ({
 
 export default function ItemList({
   page,
+  shownRecipe,
   items: shoppingItems,
   searchString,
   actions,
   recipeName,
 }: {
   page: Page;
+  shownRecipe: string;
   items?: Ingredient[];
   searchString: string;
   actions: any;
@@ -135,7 +137,11 @@ export default function ItemList({
         />
       )}
       {editedItem.id === "add" && (
-        <ShoppingItem page={page} actions={{ ...actions, setEditedItem }} />
+        <ShoppingItem
+          page={page}
+          shownRecipe={shownRecipe}
+          actions={{ ...actions, setEditedItem }}
+        />
       )}
       <List className={classes.root}>
         {shownItems.map((item) =>
@@ -143,6 +149,7 @@ export default function ItemList({
             <ShoppingItem
               key={item.id}
               page={page}
+              shownRecipe={shownRecipe}
               item={item}
               actions={{ ...actions, setEditedItem }}
             />

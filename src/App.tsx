@@ -10,7 +10,7 @@ import { Page } from "./types";
 const GenericPage = ({ page }: { page: Page }) => <div>{page}</div>;
 
 function App() {
-  const [page, setPage] = useState("Shopping List" as Page);
+  const [page, setPageId] = useState("Shopping List" as Page);
   const [shownRecipe, setShownRecipe] = useState("");
   const [searchString, setSearchString] = useState("");
 
@@ -19,7 +19,12 @@ function App() {
   const [recipes] = useState([
     { id: "Rosolli", name: "Rosolli", aisle: "Christmas", isOnList: false },
   ]);
-  const common = { page, searchString, actions };
+  const common = { page, shownRecipe, searchString, actions };
+
+  const setPage = (newPage: Page, newRecipe = "") => {
+    setPageId(newPage);
+    setShownRecipe(newRecipe);
+  };
 
   return (
     <div>
@@ -44,8 +49,7 @@ function App() {
           actions={{
             toggleIsOnList: () => console.log("called toggleIsOnList"),
             setRecipe: (recipe: any) => {
-              setShownRecipe(recipe.name);
-              setPage("Recipe");
+              setPage("Recipe", recipe.name);
             },
           }}
         />
@@ -54,7 +58,6 @@ function App() {
         <ItemList
           {...common}
           items={shoppingItems.filter((item) => {
-            console.log("App -> shownRecipe", shownRecipe, item);
             return item.recipe === shownRecipe;
           })}
           recipeName={shownRecipe}
