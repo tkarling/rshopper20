@@ -1,0 +1,9 @@
+type Ingridient @model {
+  id: ID!
+  name: String!
+  description: String
+  aisle: String
+  count: Int
+  isOnList: Boolean
+  isBougt: Boolean
+}
