@@ -10,7 +10,8 @@ export const onCreateIngridient = /* GraphQL */ `
       aisle
       count
       isOnList
-      isBougt
+      isBought
+      recipe
     }
   }
 `;
@@ -23,7 +24,8 @@ export const onUpdateIngridient = /* GraphQL */ `
       aisle
       count
       isOnList
-      isBougt
+      isBought
+      recipe
     }
   }
 `;
@@ -36,7 +38,8 @@ export const onDeleteIngridient = /* GraphQL */ `
       aisle
       count
       isOnList
-      isBougt
+      isBought
+      recipe
     }
   }
 `;

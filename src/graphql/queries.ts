@@ -10,7 +10,8 @@ export const getIngridient = /* GraphQL */ `
       aisle
       count
       isOnList
-      isBougt
+      isBought
+      recipe
     }
   }
 `;
@@ -28,7 +29,8 @@ export const listIngridients = /* GraphQL */ `
         aisle
         count
         isOnList
-        isBougt
+        isBought
+        recipe
       }
       nextToken
     }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { withAuthenticator } from "aws-amplify-react";
-import useIngredients from "./hooks/useIngredients";
+import useIngredients, { BASE_LIST } from "./hooks/useIngredients";
 import ItemList from "./components/ItemList";
 import Header from "./components/Header";
 import Error, { useErrors } from "./components/Error";
@@ -40,13 +40,17 @@ function App() {
         />
       )}
       {page === "Shopping History" && (
-        <ItemList {...common} items={shoppingItems} />
+        <ItemList
+          {...common}
+          items={shoppingItems.filter((item) => item.recipe === BASE_LIST)}
+        />
       )}
       {page === "Recipe List" && (
         <ItemList
           {...common}
           items={recipes}
           actions={{
+            ...actions,
             toggleIsOnList: () => console.log("called toggleIsOnList"),
             setRecipe: (recipe: any) => {
               setPage("Recipe", recipe.name);

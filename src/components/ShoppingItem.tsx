@@ -10,7 +10,7 @@ import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 
-import { Ingredient } from "../hooks/useIngredients";
+import { Ingredient, BASE_LIST } from "../hooks/useIngredients";
 import { Page } from "../types";
 
 const useStyles = makeStyles((theme) => ({
@@ -79,7 +79,7 @@ const emptyInputs = (shownRecipe: string) => ({
   unit: undefined,
   aisle: undefined,
   description: undefined,
-  recipe: shownRecipe || "Base List",
+  recipe: shownRecipe || BASE_LIST,
   count: 1,
 });
 
@@ -99,7 +99,10 @@ const ShoppingItem = ({
 
   useEffect(() => {
     if (item) {
-      setInputs({ ...item, recipe: shownRecipe || "Base List" } as any);
+      setInputs({
+        ...item,
+        recipe: shownRecipe || BASE_LIST,
+      } as any);
     }
   }, [item, shownRecipe]);
 
@@ -112,14 +115,13 @@ const ShoppingItem = ({
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    inputs.recipe = undefined as any; // TODO: remove this line after DB supports recipe
     inputs.unit = undefined as any; // TODO: remove this line after DB supports unit
     try {
       if (item) {
         await actions.updateShoppingItem({ ...item, ...inputs });
         actions.setEditedItem({});
       } else {
-        await actions.createNewShoppingItem({ ...inputs });
+        await actions.createNewShoppingItem({ ...inputs, isOnList: true });
       }
       setInputs(emptyInputs(shownRecipe));
       actions.setEditedItem({});

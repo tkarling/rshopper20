@@ -9,7 +9,8 @@ export type CreateIngridientInput = {
   aisle?: string | null,
   count?: number | null,
   isOnList?: boolean | null,
-  isBougt?: boolean | null,
+  isBought?: boolean | null,
+  recipe?: string | null,
 };
 
 export type ModelIngridientConditionInput = {
@@ -18,7 +19,8 @@ export type ModelIngridientConditionInput = {
   aisle?: ModelStringInput | null,
   count?: ModelIntInput | null,
   isOnList?: ModelBooleanInput | null,
-  isBougt?: ModelBooleanInput | null,
+  isBought?: ModelBooleanInput | null,
+  recipe?: ModelStringInput | null,
   and?: Array< ModelIngridientConditionInput | null > | null,
   or?: Array< ModelIngridientConditionInput | null > | null,
   not?: ModelIngridientConditionInput | null,
@@ -90,7 +92,8 @@ export type UpdateIngridientInput = {
   aisle?: string | null,
   count?: number | null,
   isOnList?: boolean | null,
-  isBougt?: boolean | null,
+  isBought?: boolean | null,
+  recipe?: string | null,
 };
 
 export type DeleteIngridientInput = {
@@ -104,7 +107,8 @@ export type ModelIngridientFilterInput = {
   aisle?: ModelStringInput | null,
   count?: ModelIntInput | null,
   isOnList?: ModelBooleanInput | null,
-  isBougt?: ModelBooleanInput | null,
+  isBought?: ModelBooleanInput | null,
+  recipe?: ModelStringInput | null,
   and?: Array< ModelIngridientFilterInput | null > | null,
   or?: Array< ModelIngridientFilterInput | null > | null,
   not?: ModelIngridientFilterInput | null,
@@ -140,7 +144,8 @@ export type CreateIngridientMutation = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };
 
@@ -158,7 +163,8 @@ export type UpdateIngridientMutation = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };
 
@@ -176,7 +182,8 @@ export type DeleteIngridientMutation = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };
 
@@ -193,7 +200,8 @@ export type GetIngridientQuery = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };
 
@@ -214,7 +222,8 @@ export type ListIngridientsQuery = {
       aisle: string | null,
       count: number | null,
       isOnList: boolean | null,
-      isBougt: boolean | null,
+      isBought: boolean | null,
+      recipe: string | null,
     } | null > | null,
     nextToken: string | null,
   } | null,
@@ -229,7 +238,8 @@ export type OnCreateIngridientSubscription = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };
 
@@ -242,7 +252,8 @@ export type OnUpdateIngridientSubscription = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };
 
@@ -255,6 +266,7 @@ export type OnDeleteIngridientSubscription = {
     aisle: string | null,
     count: number | null,
     isOnList: boolean | null,
-    isBougt: boolean | null,
+    isBought: boolean | null,
+    recipe: string | null,
   } | null,
 };

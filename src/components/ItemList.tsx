@@ -46,6 +46,7 @@ const Buttons = ({
   const { setEditedItem, setShowChecked } = actions;
   const label = page === "Shopping List" ? "Show Bought" : "Show On List";
   const matches = useMediaQuery("(min-width:600px)");
+  const mainPage = page === "Shopping List" || page === "Shopping History";
 
   return (
     <div className={classes.buttonContainer}>
@@ -57,19 +58,21 @@ const Buttons = ({
         <AddIcon />
       </IconButton>
       {!matches && <div className={classes.title}>{recipeName || page}</div>}
-      <FormControlLabel
-        value="start"
-        control={
-          <Checkbox
-            checked={showChecked}
-            onClick={() => {
-              setShowChecked((value: boolean) => !value);
-            }}
-          />
-        }
-        label={label}
-        labelPlacement="start"
-      />
+      {mainPage && (
+        <FormControlLabel
+          value="start"
+          control={
+            <Checkbox
+              checked={showChecked}
+              onClick={() => {
+                setShowChecked((value: boolean) => !value);
+              }}
+            />
+          }
+          label={label}
+          labelPlacement="start"
+        />
+      )}
     </div>
   );
 };

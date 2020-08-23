@@ -16,6 +16,8 @@ import {
 
 Amplify.configure(awsConfig);
 
+export const BASE_LIST = "Base List";
+
 export type Ingredient = {
   id?: string;
   name: string;
@@ -68,7 +70,11 @@ const initialState: Ingredient[] = [];
 const reducer = (shoppingItems: Ingredient[], action: Action) => {
   switch (action.type) {
     case "QUERY":
-      return action.payload;
+      const { payload } = action;
+      return payload.map((item) => ({
+        ...item,
+        recipe: item.recipe || BASE_LIST,
+      }));
     case "ADD_SUBSCRIPTION":
       return [...shoppingItems, action.payload];
     case "DELETE_SUBSCRIPTION":
@@ -108,9 +114,6 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
         graphqlOperation(updateIngridient, {
           input: {
             ...item,
-            isBougt: item.isBought,
-            isBought: undefined,
-            recipe: undefined,
           },
         })
       );
@@ -132,15 +135,14 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
     const getShoppingList = async () => {
       try {
         const shoppingItems = await API.graphql(
-          graphqlOperation(listIngridients)
+          graphqlOperation(listIngridients, { limit: 100 })
         );
         dispatch({
           type: "QUERY",
           payload: shoppingItems.data.listIngridients.items.map(
             (item: any) => ({
               ...item,
-              isBought: item.isBougt,
-              recipe: item.name === "red beet" ? "Rosolli" : "Base List",
+              recipe: item.recipe || BASE_LIST,
             })
           ),
         });
@@ -180,11 +182,7 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
         const payload = eventData.value.data.onUpdateIngridient;
         dispatch({
           type: "UPDATE_SUBSCRIPTION",
-          payload: {
-            ...payload,
-            isBought: payload.isBougt,
-            recipe: payload.name === "red beet" ? "Rosolli" : "Base List",
-          },
+          payload,
         });
       },
     });
