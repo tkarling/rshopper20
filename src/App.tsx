@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { withAuthenticator } from "aws-amplify-react";
+import { withAuthenticator } from "@aws-amplify/ui-react";
 import useIngredients, { BASE_LIST } from "./hooks/useIngredients";
 import ItemList from "./components/ItemList";
 import Header from "./components/Header";

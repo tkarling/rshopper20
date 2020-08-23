@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from "react";
 
-import Amplify, { API, graphqlOperation } from "aws-amplify";
+import Amplify, { API as rAPI, graphqlOperation } from "aws-amplify";
 import awsConfig from "../aws-exports";
 import {
   createIngridient,
@@ -13,6 +13,7 @@ import {
   onDeleteIngridient,
   onUpdateIngridient,
 } from "../graphql/subscriptions";
+const API: any = rAPI;
 
 Amplify.configure(awsConfig);
 
