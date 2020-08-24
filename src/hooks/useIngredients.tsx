@@ -21,7 +21,7 @@ export const BASE_LIST = "Base List";
 
 export type Ingredient = {
   id?: string;
-  name: string;
+  name?: string;
   unit?: string;
   description?: string;
   aisle?: string;
@@ -123,11 +123,11 @@ const useIngredients = ({ onError }: { onError: (error: Error[]) => void }) => {
     }
   };
 
-  const toggleIsBought = (item: Ingredient) => {
+  const toggleIsBought = async (item: Ingredient) => {
     updateShoppingItem({ ...item, isBought: !item.isBought });
   };
 
-  const toggleIsOnList = (item: Ingredient) => {
+  const toggleIsOnList = async (item: Ingredient) => {
     updateShoppingItem({ ...item, isOnList: !item.isOnList });
   };
 

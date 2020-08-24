@@ -29,18 +29,21 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 16px",
     flex: 1,
   },
+  noItems: {
+    padding: 12,
+  },
 }));
 
 const Buttons = ({
   page,
   showChecked,
   actions,
-  recipeName,
+  shownRecipe,
 }: {
   page: Page;
   showChecked: boolean;
   actions: any;
-  recipeName?: string;
+  shownRecipe?: string;
 }) => {
   const classes = useStyles();
   const { setEditedItem, setShowChecked } = actions;
@@ -57,7 +60,7 @@ const Buttons = ({
       >
         <AddIcon />
       </IconButton>
-      {!matches && <div className={classes.title}>{recipeName || page}</div>}
+      {!matches && <div className={classes.title}>{shownRecipe || page}</div>}
       {mainPage && (
         <FormControlLabel
           value="start"
@@ -77,20 +80,25 @@ const Buttons = ({
   );
 };
 
-const getShowItems = ({
-  shoppingItems,
+const getShownItems = ({
+  items,
   page,
   searchString,
   showChecked,
+  shownRecipe,
 }: {
-  shoppingItems: Ingredient[] | Recipe[];
+  items: Ingredient[] | Recipe[];
   page: Page;
   searchString: string;
   showChecked: boolean;
-}) =>
-  (showChecked
-    ? shoppingItems
-    : (shoppingItems as (
+  shownRecipe: string;
+}) => {
+  const applicableItems = !shownRecipe
+    ? items
+    : (items as Ingredient[]).filter((item) => item.recipe === shownRecipe);
+  return (showChecked
+    ? applicableItems
+    : (applicableItems as (
         | Ingredient
         | Recipe
       )[]).filter((item: Ingredient | Recipe) =>
@@ -105,28 +113,54 @@ const getShowItems = ({
       (item as Ingredient).aisle?.includes(searchString) ||
       (item as Recipe).tag?.includes(searchString)
   );
+};
 
-export default function ItemList({
-  page,
-  shownRecipe,
-  items: shoppingItems,
-  searchString,
-  actions,
-  recipeName,
-}: {
+export interface ItemListProps {
   page: Page;
   shownRecipe: string;
   items?: Ingredient[];
   searchString: string;
-  actions: any;
-  recipeName?: string;
-}) {
+  actions: {
+    setRecipe: (recipe: string) => void;
+    setEditedItem: (item: Ingredient) => void;
+    toggleIsBought: (item: Ingredient) => Promise<void>;
+    toggleIsOnList: (item: Ingredient) => Promise<void>;
+    createNewShoppingItem: (item: Ingredient) => Promise<void>;
+    updateShoppingItem: (item: Ingredient) => Promise<void>;
+    deleteShoppingItem: (item: Ingredient) => Promise<void>;
+  };
+}
+export default function ItemList({
+  page,
+  shownRecipe,
+  items = [],
+  searchString,
+  actions = {
+    setRecipe: (recipe: string) => console.log("called setRecipe", recipe),
+    setEditedItem: (item: Ingredient) =>
+      console.log("called setEditedItem", item),
+    toggleIsBought: (item: Ingredient) => {
+      return Promise.resolve(console.log("called toggleIsBought", item));
+    },
+    toggleIsOnList: (item: Ingredient) =>
+      Promise.resolve(console.log("called toggleIsOnList", item)),
+    createNewShoppingItem: (item: Ingredient) => {
+      return Promise.resolve(console.log("called createNewShoppingItem", item));
+    },
+    updateShoppingItem: (item: Ingredient) => {
+      return Promise.resolve(console.log("called updateShoppingItem", item));
+    },
+    deleteShoppingItem: (item: Ingredient) => {
+      return Promise.resolve(console.log("called deleteShoppingItem", item));
+    },
+  },
+}: ItemListProps) {
   const classes = useStyles();
 
   const [editedItem, setEditedItem] = useState({} as Ingredient | Recipe);
   const [showChecked, setShowChecked] = useState(true);
-  const shownItems = shoppingItems
-    ? getShowItems({ shoppingItems, page, searchString, showChecked })
+  const shownItems = items
+    ? getShownItems({ items, page, searchString, showChecked, shownRecipe })
     : [];
   const isEditing = !!editedItem.id;
   return (
@@ -136,7 +170,7 @@ export default function ItemList({
           page={page}
           showChecked={showChecked}
           actions={{ setEditedItem, setShowChecked }}
-          recipeName={recipeName}
+          shownRecipe={shownRecipe}
         />
       )}
       {editedItem.id === "add" && (
@@ -146,35 +180,38 @@ export default function ItemList({
           actions={{ ...actions, setEditedItem }}
         />
       )}
-      <List className={classes.root}>
-        {shownItems.map((item) =>
-          editedItem.id === item.id ? (
-            <ShoppingItem
-              key={item.id}
-              page={page}
-              shownRecipe={shownRecipe}
-              item={item}
-              actions={{ ...actions, setEditedItem }}
-            />
-          ) : (
-            <ReadOnlyItem
-              key={item.id}
-              page={page}
-              item={item}
-              actions={{
-                ...actions,
-                onClick: isEditing
-                  ? () => {}
-                  : page === "Recipe List"
-                  ? actions.setRecipe
-                  : setEditedItem,
-                toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,
-                toggleIsOnList: isEditing ? () => {} : actions.toggleIsOnList,
-              }}
-            />
-          )
-        )}
-      </List>
+      {!shownItems.length && <div className={classes.noItems}>No Items</div>}
+      {!!shownItems.length && (
+        <List className={classes.root}>
+          {shownItems.map((item) =>
+            editedItem.id === item.id ? (
+              <ShoppingItem
+                key={item.id}
+                page={page}
+                shownRecipe={shownRecipe}
+                item={item}
+                actions={{ ...actions, setEditedItem }}
+              />
+            ) : (
+              <ReadOnlyItem
+                key={item.id}
+                page={page}
+                item={item}
+                actions={{
+                  ...actions,
+                  onClick: isEditing
+                    ? () => {}
+                    : page === "Recipies"
+                    ? actions.setRecipe
+                    : setEditedItem,
+                  toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,
+                  toggleIsOnList: isEditing ? () => {} : actions.toggleIsOnList,
+                }}
+              />
+            )
+          )}
+        </List>
+      )}
     </div>
   );
 }

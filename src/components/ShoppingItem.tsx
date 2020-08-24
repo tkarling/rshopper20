@@ -92,7 +92,13 @@ const ShoppingItem = ({
   page: Page;
   shownRecipe: string;
   item?: Ingredient;
-  actions: any;
+  actions: {
+    createNewShoppingItem: (item: Ingredient) => Promise<void>;
+    updateShoppingItem: (item: Ingredient) => Promise<void>;
+    deleteShoppingItem: (item: Ingredient) => Promise<void>;
+    toggleIsOnList: (item: Ingredient) => Promise<void>;
+    setEditedItem: (item: Ingredient) => void;
+  };
 }) => {
   const classes = useStyles();
   const [inputs, setInputs] = useState(() => emptyInputs(shownRecipe));
@@ -119,7 +125,7 @@ const ShoppingItem = ({
     try {
       if (item) {
         await actions.updateShoppingItem({ ...item, ...inputs });
-        actions.setEditedItem({});
+        actions.setEditedItem({} as Ingredient);
       } else {
         await actions.createNewShoppingItem({ ...inputs, isOnList: true });
       }

@@ -84,6 +84,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export interface HeaderProps {
+  page?: Page;
+  actions: {
+    setPage: (page: Page) => void;
+    setSearchString: (searchString: string) => void;
+  };
+  shownRecipe?: string;
+}
+
 export default function PrimarySearchAppBar({
   page = "Shopping List" as Page,
   actions = {
@@ -94,15 +103,8 @@ export default function PrimarySearchAppBar({
       console.log("called setSearchString", searchString);
     },
   },
-  recipeName,
-}: {
-  page?: Page;
-  actions: {
-    setPage: (page: Page) => void;
-    setSearchString: (searchString: string) => void;
-  };
-  recipeName?: string;
-}) {
+  shownRecipe,
+}: HeaderProps) {
   const { setPage, setSearchString } = actions;
   const classes = useStyles();
   const [profileAnchorEl, setProfileAnchorEl] = React.useState(null);
@@ -187,12 +189,12 @@ export default function PrimarySearchAppBar({
           <p>Shopping History</p>
         </MenuItem>
       )}
-      {page !== "Recipe List" && (
-        <MenuItem onClick={() => handleSetPage("Recipe List" as Page)}>
-          <IconButton aria-label="show Recipe List" color="inherit">
+      {page !== "Recipies" && (
+        <MenuItem onClick={() => handleSetPage("Recipies" as Page)}>
+          <IconButton aria-label="show Recipies" color="inherit">
             <FormatListBulleted />
           </IconButton>
-          <p>Recipe List</p>
+          <p>Recipies</p>
         </MenuItem>
       )}
       <MenuItem onClick={handleProfileMenuOpen}>
@@ -229,7 +231,7 @@ export default function PrimarySearchAppBar({
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            {recipeName || page}
+            {shownRecipe || page}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -264,9 +266,9 @@ export default function PrimarySearchAppBar({
               <HistoryIcon />
             </IconButton>
             <IconButton
-              aria-label="show Recipe List"
+              aria-label="show Recipies"
               color="inherit"
-              onClick={() => handleSetPage("Recipe List" as Page)}
+              onClick={() => handleSetPage("Recipies" as Page)}
             >
               <FormatListBulleted />
             </IconButton>

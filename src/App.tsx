@@ -19,7 +19,7 @@ function App() {
   const [recipes] = useState([
     { id: "Rosolli", name: "Rosolli", aisle: "Christmas", isOnList: false },
   ]);
-  const common = { page, shownRecipe, searchString, actions };
+  const common = { page, shownRecipe, searchString, actions: actions as any };
 
   const setPage = (newPage: Page, newRecipe = "") => {
     setPageId(newPage);
@@ -31,7 +31,7 @@ function App() {
       <Header
         page={page}
         actions={{ setPage, setSearchString }}
-        recipeName={shownRecipe}
+        shownRecipe={shownRecipe}
       />
       {page === "Shopping List" && (
         <ItemList
@@ -45,29 +45,20 @@ function App() {
           items={shoppingItems.filter((item) => item.recipe === BASE_LIST)}
         />
       )}
-      {page === "Recipe List" && (
+      {page === "Recipies" && (
         <ItemList
           {...common}
           items={recipes}
           actions={{
-            ...actions,
-            toggleIsOnList: () => console.log("called toggleIsOnList"),
+            ...(actions as any),
             setRecipe: (recipe: any) => {
               setPage("Recipe", recipe.name);
             },
           }}
         />
       )}
-      {page === "Recipe" && (
-        <ItemList
-          {...common}
-          items={shoppingItems.filter((item) => {
-            return item.recipe === shownRecipe;
-          })}
-          recipeName={shownRecipe}
-        />
-      )}
-      {!["Shopping List", "Shopping History", "Recipe List", "Recipe"].includes(
+      {page === "Recipe" && <ItemList {...common} items={shoppingItems} />}
+      {!["Shopping List", "Shopping History", "Recipies", "Recipe"].includes(
         page
       ) && <GenericPage page={page} />}
       <Error errors={errors} onCloseError={onCloseError} />
