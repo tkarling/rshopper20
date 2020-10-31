@@ -56,6 +56,13 @@ function App() {
             setRecipe: (recipe: any) => {
               setPage("Recipe", recipe.name);
             },
+            openRecipe: (recipe: any) => {
+              if (recipe.url) {
+                window.open(recipe.url);
+              } else {
+                console.log("no url for", recipe);
+              }
+            },
           }}
         />
       )}

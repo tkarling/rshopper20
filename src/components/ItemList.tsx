@@ -94,7 +94,7 @@ const getShownItems = ({
   showChecked: boolean;
   shownRecipe: string;
 }) => {
-  const searchString = _searchString.toLocaleLowerCase()
+  const searchString = _searchString.toLocaleLowerCase();
   const applicableItems = !shownRecipe
     ? items
     : (items as Ingredient[]).filter((item) => item.recipe === shownRecipe);
@@ -124,6 +124,7 @@ export interface ItemListProps {
   searchString: string;
   actions: {
     setRecipe: (recipe: string) => void;
+    openRecipe: (recipe: string) => void;
     setEditedItem: (item: Ingredient) => void;
     toggleIsBought: (item: Ingredient) => Promise<void>;
     toggleIsOnList: (item: Ingredient) => Promise<void>;
@@ -139,6 +140,7 @@ export default function ItemList({
   searchString,
   actions = {
     setRecipe: (recipe: string) => console.log("called setRecipe", recipe),
+    openRecipe: (recipe: string) => console.log("called openRecipe", recipe),
     setEditedItem: (item: Ingredient) =>
       console.log("called setEditedItem", item),
     toggleIsBought: (item: Ingredient) => {
@@ -201,11 +203,7 @@ export default function ItemList({
                 item={item}
                 actions={{
                   ...actions,
-                  onClick: isEditing
-                    ? () => {}
-                    : page === "Recipes"
-                    ? actions.setRecipe
-                    : setEditedItem,
+                  onClick: isEditing ? () => {} : setEditedItem,
                   toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,
                   toggleIsOnList: isEditing ? () => {} : actions.toggleIsOnList,
                 }}

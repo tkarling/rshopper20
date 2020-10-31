@@ -179,10 +179,10 @@ const EditableItem = ({
     if (item) {
       setInputs({
         ...item,
-        recipe: shownRecipe || BASE_LIST,
+        recipe: isRecipe ? undefined : shownRecipe || BASE_LIST,
       } as any);
     }
-  }, [item, shownRecipe]);
+  }, [isRecipe, item, shownRecipe]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<any>
@@ -198,7 +198,7 @@ const EditableItem = ({
         await actions.updateShoppingItem({ ...item, ...inputs });
         actions.setEditedItem({} as Ingredient);
       } else {
-        await actions.createNewShoppingItem({ ...inputs, isOnList: true });
+        await actions.createNewShoppingItem({ ...inputs, isOnList: !isRecipe });
       }
       setInputs(emptyInputs({ isRecipe, shownRecipe }));
       actions.setEditedItem({});
