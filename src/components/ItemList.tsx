@@ -83,7 +83,7 @@ const Buttons = ({
 const getShownItems = ({
   items,
   page,
-  searchString,
+  searchString: _searchString,
   showChecked,
   shownRecipe,
 }: {
@@ -93,6 +93,7 @@ const getShownItems = ({
   showChecked: boolean;
   shownRecipe: string;
 }) => {
+  const searchString = _searchString.toLocaleLowerCase()
   const applicableItems = !shownRecipe
     ? items
     : (items as Ingredient[]).filter((item) => item.recipe === shownRecipe);
@@ -109,9 +110,9 @@ const getShownItems = ({
   ).filter(
     (item: Ingredient | Recipe) =>
       !searchString ||
-      item.name?.includes(searchString) ||
-      (item as Ingredient).aisle?.includes(searchString) ||
-      (item as Recipe).tag?.includes(searchString)
+      item.name?.toLowerCase().includes(searchString) ||
+      (item as Ingredient).aisle?.toLowerCase().includes(searchString) ||
+      (item as Recipe).tag?.toLowerCase().includes(searchString)
   );
 };
 
