@@ -12,6 +12,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import { Ingredient, BASE_LIST } from "../hooks/useIngredients";
 import { Page } from "../types";
+import { Recipe } from "../hooks/useRecipes";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,16 +75,84 @@ const Field = ({
   );
 };
 
-const emptyInputs = (shownRecipe: string) => ({
-  name: undefined,
-  unit: undefined,
-  aisle: undefined,
-  description: undefined,
-  recipe: shownRecipe || BASE_LIST,
-  count: 1,
-});
+const emptyInputs = ({
+  isRecipe,
+  shownRecipe,
+}: {
+  isRecipe: boolean;
+  shownRecipe?: string;
+}) =>
+  isRecipe
+    ? {}
+    : {
+        recipe: shownRecipe || BASE_LIST,
+        count: 1,
+      };
 
-const ShoppingItem = ({
+const EditableIngredient = ({
+  inputs,
+  handleChange,
+  classes,
+}: {
+  inputs: any;
+  handleChange: any;
+  classes: any;
+}) => {
+  const common = { inputs, handleChange };
+  return (
+    <>
+      <div className={classes.row}>
+        <Field name="Count" width="20" {...common} />
+        <Field name="Unit" width="40" {...common} />
+        <Field name="Name" {...common} />
+      </div>
+      <div className={classes.row}>
+        <FormControl>
+          <Select
+            className={classes.textField}
+            name="aisle"
+            labelId="aisle"
+            id="aisle"
+            value={inputs.aisle || ""}
+            onChange={handleChange}
+          >
+            {AISLES.map((aisle) => (
+              <MenuItem key={aisle} value={aisle.toLowerCase()}>
+                {aisle}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Field name="Recipe" {...common} readOnly={true} />
+      </div>
+    </>
+  );
+};
+
+const EditableRecipe = ({
+  inputs,
+  handleChange,
+  classes,
+}: {
+  inputs: any;
+  handleChange: any;
+  classes: any;
+}) => {
+  const common = { inputs, handleChange };
+  return (
+    <>
+      <div className={classes.row}>
+        <Field name="Name" {...common} />
+      </div>
+      <div className={classes.row}>
+        <Field name="Tag" {...common} />
+        <Field name="Url" {...common} />
+      </div>
+    </>
+  );
+};
+
+const EditableItem = ({
   page,
   shownRecipe,
   item,
@@ -93,15 +162,18 @@ const ShoppingItem = ({
   shownRecipe: string;
   item?: Ingredient;
   actions: {
-    createNewShoppingItem: (item: Ingredient) => Promise<void>;
-    updateShoppingItem: (item: Ingredient) => Promise<void>;
-    deleteShoppingItem: (item: Ingredient) => Promise<void>;
-    toggleIsOnList: (item: Ingredient) => Promise<void>;
-    setEditedItem: (item: Ingredient) => void;
+    createNewShoppingItem: (item: Ingredient | Recipe) => Promise<void>;
+    updateShoppingItem: (item: Ingredient | Recipe) => Promise<void>;
+    deleteShoppingItem: (item: Ingredient | Recipe) => Promise<void>;
+    toggleIsOnList: (item: Ingredient | Recipe) => Promise<void>;
+    setEditedItem: (item: Ingredient | Recipe) => void;
   };
 }) => {
   const classes = useStyles();
-  const [inputs, setInputs] = useState(() => emptyInputs(shownRecipe));
+  const isRecipe = page === "Recipes";
+  const [inputs, setInputs] = useState(() =>
+    emptyInputs({ isRecipe, shownRecipe })
+  );
 
   useEffect(() => {
     if (item) {
@@ -121,7 +193,6 @@ const ShoppingItem = ({
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    inputs.unit = undefined as any; // TODO: remove this line after DB supports unit
     try {
       if (item) {
         await actions.updateShoppingItem({ ...item, ...inputs });
@@ -129,7 +200,7 @@ const ShoppingItem = ({
       } else {
         await actions.createNewShoppingItem({ ...inputs, isOnList: true });
       }
-      setInputs(emptyInputs(shownRecipe));
+      setInputs(emptyInputs({ isRecipe, shownRecipe }));
       actions.setEditedItem({});
     } catch (error) {
       console.error("Error submitting item", error);
@@ -152,36 +223,17 @@ const ShoppingItem = ({
     }
   };
 
-  const common = { inputs, handleChange };
+  const props = { inputs, handleChange, classes };
   return (
     <div>
       <form>
         <div className={classes.root}>
           <div className={classes.inputsContainer}>
-            <div className={classes.row}>
-              <Field name="Count" width="20" {...common} />
-              <Field name="Unit" width="40" {...common} />
-              <Field name="Name" {...common} />
-            </div>
-            <div className={classes.row}>
-              <FormControl>
-                <Select
-                  className={classes.textField}
-                  name="aisle"
-                  labelId="aisle"
-                  id="aisle"
-                  value={inputs.aisle || ""}
-                  onChange={handleChange}
-                >
-                  {AISLES.map((aisle) => (
-                    <MenuItem key={aisle} value={aisle.toLowerCase()}>
-                      {aisle}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Field name="Recipe" {...common} readOnly={true} />
-            </div>
+            {isRecipe ? (
+              <EditableRecipe {...props} />
+            ) : (
+              <EditableIngredient {...props} />
+            )}
           </div>
           <div className={classes.buttonContainer}>
             <IconButton
@@ -206,4 +258,4 @@ const ShoppingItem = ({
   );
 };
 
-export default ShoppingItem;
+export default EditableItem;

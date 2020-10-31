@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import useIngredients, { BASE_LIST } from "./hooks/useIngredients";
+import useRecipes from "./hooks/useRecipes";
 import ItemList from "./components/ItemList";
 import Header from "./components/Header";
 import Error, { useErrors } from "./components/Error";
@@ -10,15 +11,13 @@ import { Page } from "./types";
 const GenericPage = ({ page }: { page: Page }) => <div>{page}</div>;
 
 function App() {
-  const [page, setPageId] = useState("Shopping List" as Page);
+  const [page, setPageId] = useState("Recipes" as Page);
   const [shownRecipe, setShownRecipe] = useState("");
   const [searchString, setSearchString] = useState("");
 
   const { errors, onError, onCloseError } = useErrors();
   const { shoppingItems, ...actions } = useIngredients({ onError });
-  const [recipes] = useState([
-    { id: "Rosolli", name: "Rosolli", aisle: "Christmas", isOnList: false },
-  ]);
+  const { recipes, ...recipeActions } = useRecipes({ onError });
   const common = { page, shownRecipe, searchString, actions: actions as any };
 
   const setPage = (newPage: Page, newRecipe = "") => {
@@ -45,12 +44,15 @@ function App() {
           items={shoppingItems.filter((item) => item.recipe === BASE_LIST)}
         />
       )}
-      {page === "Recipies" && (
+      {page === "Recipes" && (
         <ItemList
           {...common}
           items={recipes}
           actions={{
-            ...(actions as any),
+            ...(recipeActions as any),
+            createNewShoppingItem: recipeActions.createRecipe,
+            updateShoppingItem: recipeActions.updateRecipe,
+            deleteShoppingItem: recipeActions.deleteRecipe,
             setRecipe: (recipe: any) => {
               setPage("Recipe", recipe.name);
             },
@@ -58,7 +60,7 @@ function App() {
         />
       )}
       {page === "Recipe" && <ItemList {...common} items={shoppingItems} />}
-      {!["Shopping List", "Shopping History", "Recipies", "Recipe"].includes(
+      {!["Shopping List", "Shopping History", "Recipes", "Recipe"].includes(
         page
       ) && <GenericPage page={page} />}
       <Error errors={errors} onCloseError={onCloseError} />

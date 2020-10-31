@@ -189,12 +189,12 @@ export default function PrimarySearchAppBar({
           <p>Shopping History</p>
         </MenuItem>
       )}
-      {page !== "Recipies" && (
-        <MenuItem onClick={() => handleSetPage("Recipies" as Page)}>
-          <IconButton aria-label="show Recipies" color="inherit">
+      {page !== "Recipes" && (
+        <MenuItem onClick={() => handleSetPage("Recipes" as Page)}>
+          <IconButton aria-label="show Recipes" color="inherit">
             <FormatListBulleted />
           </IconButton>
-          <p>Recipies</p>
+          <p>Recipes</p>
         </MenuItem>
       )}
       <MenuItem onClick={handleProfileMenuOpen}>
@@ -266,9 +266,9 @@ export default function PrimarySearchAppBar({
               <HistoryIcon />
             </IconButton>
             <IconButton
-              aria-label="show Recipies"
+              aria-label="show Recipes"
               color="inherit"
-              onClick={() => handleSetPage("Recipies" as Page)}
+              onClick={() => handleSetPage("Recipes" as Page)}
             >
               <FormatListBulleted />
             </IconButton>

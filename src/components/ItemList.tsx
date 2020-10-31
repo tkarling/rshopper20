@@ -8,8 +8,9 @@ import AddIcon from "@material-ui/icons/AddCircle";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-import { Ingredient, Recipe } from "../hooks/useIngredients";
-import ShoppingItem from "./ShoppingItem";
+import { Ingredient } from "../hooks/useIngredients";
+import { Recipe } from "../hooks/useRecipes";
+import EditableItem from "./ShoppingItem";
 import ReadOnlyItem from "./ReadOnlyItem";
 import { Page } from "../types";
 
@@ -175,7 +176,7 @@ export default function ItemList({
         />
       )}
       {editedItem.id === "add" && (
-        <ShoppingItem
+        <EditableItem
           page={page}
           shownRecipe={shownRecipe}
           actions={{ ...actions, setEditedItem }}
@@ -186,7 +187,7 @@ export default function ItemList({
         <List className={classes.root}>
           {shownItems.map((item) =>
             editedItem.id === item.id ? (
-              <ShoppingItem
+              <EditableItem
                 key={item.id}
                 page={page}
                 shownRecipe={shownRecipe}
@@ -202,7 +203,7 @@ export default function ItemList({
                   ...actions,
                   onClick: isEditing
                     ? () => {}
-                    : page === "Recipies"
+                    : page === "Recipes"
                     ? actions.setRecipe
                     : setEditedItem,
                   toggleIsBought: isEditing ? () => {} : actions.toggleIsBought,

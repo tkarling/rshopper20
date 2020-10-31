@@ -43,3 +43,42 @@ export const onDeleteIngridient = /* GraphQL */ `
     }
   }
 `;
+export const onCreateRecipe = /* GraphQL */ `
+  subscription OnCreateRecipe {
+    onCreateRecipe {
+      id
+      name
+      description
+      tag
+      isOnList
+      url
+      picUrl
+    }
+  }
+`;
+export const onUpdateRecipe = /* GraphQL */ `
+  subscription OnUpdateRecipe {
+    onUpdateRecipe {
+      id
+      name
+      description
+      tag
+      isOnList
+      url
+      picUrl
+    }
+  }
+`;
+export const onDeleteRecipe = /* GraphQL */ `
+  subscription OnDeleteRecipe {
+    onDeleteRecipe {
+      id
+      name
+      description
+      tag
+      isOnList
+      url
+      picUrl
+    }
+  }
+`;

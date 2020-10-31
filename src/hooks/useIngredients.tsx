@@ -31,14 +31,6 @@ export type Ingredient = {
   recipe?: string;
 };
 
-export type Recipe = {
-  id?: string;
-  name: string;
-  description?: string;
-  isOnList?: boolean;
-  tag?: string;
-};
-
 type AppState = {
   shoppingItems: Ingredient[];
 };

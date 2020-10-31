@@ -100,6 +100,42 @@ export type DeleteIngridientInput = {
   id?: string | null,
 };
 
+export type CreateRecipeInput = {
+  id?: string | null,
+  name: string,
+  description?: string | null,
+  tag?: string | null,
+  isOnList?: boolean | null,
+  url?: string | null,
+  picUrl?: string | null,
+};
+
+export type ModelRecipeConditionInput = {
+  name?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  tag?: ModelStringInput | null,
+  isOnList?: ModelBooleanInput | null,
+  url?: ModelStringInput | null,
+  picUrl?: ModelStringInput | null,
+  and?: Array< ModelRecipeConditionInput | null > | null,
+  or?: Array< ModelRecipeConditionInput | null > | null,
+  not?: ModelRecipeConditionInput | null,
+};
+
+export type UpdateRecipeInput = {
+  id: string,
+  name?: string | null,
+  description?: string | null,
+  tag?: string | null,
+  isOnList?: boolean | null,
+  url?: string | null,
+  picUrl?: string | null,
+};
+
+export type DeleteRecipeInput = {
+  id?: string | null,
+};
+
 export type ModelIngridientFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
@@ -128,6 +164,19 @@ export type ModelIDInput = {
   attributeExists?: boolean | null,
   attributeType?: ModelAttributeTypes | null,
   size?: ModelSizeInput | null,
+};
+
+export type ModelRecipeFilterInput = {
+  id?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  tag?: ModelStringInput | null,
+  isOnList?: ModelBooleanInput | null,
+  url?: ModelStringInput | null,
+  picUrl?: ModelStringInput | null,
+  and?: Array< ModelRecipeFilterInput | null > | null,
+  or?: Array< ModelRecipeFilterInput | null > | null,
+  not?: ModelRecipeFilterInput | null,
 };
 
 export type CreateIngridientMutationVariables = {
@@ -187,6 +236,60 @@ export type DeleteIngridientMutation = {
   } | null,
 };
 
+export type CreateRecipeMutationVariables = {
+  input: CreateRecipeInput,
+  condition?: ModelRecipeConditionInput | null,
+};
+
+export type CreateRecipeMutation = {
+  createRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
+  } | null,
+};
+
+export type UpdateRecipeMutationVariables = {
+  input: UpdateRecipeInput,
+  condition?: ModelRecipeConditionInput | null,
+};
+
+export type UpdateRecipeMutation = {
+  updateRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
+  } | null,
+};
+
+export type DeleteRecipeMutationVariables = {
+  input: DeleteRecipeInput,
+  condition?: ModelRecipeConditionInput | null,
+};
+
+export type DeleteRecipeMutation = {
+  deleteRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
+  } | null,
+};
+
 export type GetIngridientQueryVariables = {
   id: string,
 };
@@ -224,6 +327,46 @@ export type ListIngridientsQuery = {
       isOnList: boolean | null,
       isBought: boolean | null,
       recipe: string | null,
+    } | null > | null,
+    nextToken: string | null,
+  } | null,
+};
+
+export type GetRecipeQueryVariables = {
+  id: string,
+};
+
+export type GetRecipeQuery = {
+  getRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
+  } | null,
+};
+
+export type ListRecipesQueryVariables = {
+  filter?: ModelRecipeFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListRecipesQuery = {
+  listRecipes:  {
+    __typename: "ModelRecipeConnection",
+    items:  Array< {
+      __typename: "Recipe",
+      id: string,
+      name: string,
+      description: string | null,
+      tag: string | null,
+      isOnList: boolean | null,
+      url: string | null,
+      picUrl: string | null,
     } | null > | null,
     nextToken: string | null,
   } | null,
@@ -268,5 +411,44 @@ export type OnDeleteIngridientSubscription = {
     isOnList: boolean | null,
     isBought: boolean | null,
     recipe: string | null,
+  } | null,
+};
+
+export type OnCreateRecipeSubscription = {
+  onCreateRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
+  } | null,
+};
+
+export type OnUpdateRecipeSubscription = {
+  onUpdateRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
+  } | null,
+};
+
+export type OnDeleteRecipeSubscription = {
+  onDeleteRecipe:  {
+    __typename: "Recipe",
+    id: string,
+    name: string,
+    description: string | null,
+    tag: string | null,
+    isOnList: boolean | null,
+    url: string | null,
+    picUrl: string | null,
   } | null,
 };

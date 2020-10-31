@@ -1,7 +1,7 @@
 export type Page =
   | "Shopping List"
   | "Shopping History"
-  | "Recipe List"
+  | "Recipes"
   | "Recipe"
   | "Profile"
   | "My Account";
